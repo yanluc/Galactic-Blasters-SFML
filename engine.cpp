@@ -77,9 +77,10 @@ void Engine::StartMenu()
     while (window_.isOpen())
     {
         sf::Event event;
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) return;
         while (window_.pollEvent(event))
         {
-            if(event.type==sf::Event::KeyPressed || event.type==sf::Event::MouseButtonPressed)
+            if(event.type==sf::Event::MouseButtonPressed)
             {
                 return;
             }
@@ -93,13 +94,11 @@ void Engine::StartMenu()
         text.setFont(font);
         text.setCharacterSize(30);
         text.setFillColor(sf::Color::Black);
-        text.setString("space to shoot, arrows to control, press any key to continue");
+        text.setString("space to shoot, arrows to control, press space to continue");
         text.setPosition(0.5 * width,0.5*height);
         window_.draw(text);
         if(best_time!=9999999)
         {
-            sf::Text text;
-            text.setFont(font);
             text.setCharacterSize(30);
             text.setFillColor(sf::Color::Black);
             text.setString("best time:");
@@ -122,18 +121,22 @@ void Engine::StartMenu()
             window_.draw(text);
         }
         if(leaderboard.size()>15)
-            {
-                if(IsKeyPressed(KEY_DOWN)) score_pos++;
-                else if(IsKeyPressed(KEY_UP)) score_pos--;
-                if(score_pos<0)score_pos=0;
-                if(score_pos>scores.size()-15)score_pos=scores.size()-15;
-            }
+        {
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) score_pos++;
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) score_pos--;
+            if(score_pos<0)score_pos=0;
+            if(score_pos>leaderboard.size()-15)score_pos=leaderboard.size()-15;
+        }
             
-            for(int i = score_pos; i < scores.size();i++)
-            {
-                DrawText(scores[i].c_str(),0.8 * width,0.2*height+0.05*height*(i-score_pos),30,BLACK);
-                DrawText((times[i]+" s").c_str(),0.9 * width,0.2*height+0.05*height*(i-score_pos),30,BLACK);
-            }
+        for(int i = score_pos; i < std::min(score_pos+15, int(leaderboard.size()));i++)
+        {
+            text.setString(std::to_string(leaderboard[i].second));
+            text.setPosition(0.8 * width,0.2*height+0.05*height*(i-score_pos));
+            window_.draw(text);
+            text.setString(std::to_string(leaderboard[i].first));
+            text.setPosition(0.9 * width,0.2*height+0.05*height*(i-score_pos));
+            window_.draw(text);
+        }
         window_.display();
     }
 }
