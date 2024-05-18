@@ -76,3 +76,7 @@ class UnguidedBomb : public Bomb
      UnguidedBomb(int posx, int posy);
      void update();
 };
+class Background : public GraphicalObject
+{
+    public:
+};

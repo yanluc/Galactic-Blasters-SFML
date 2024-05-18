@@ -66,6 +66,8 @@ void Engine::InitWindow()
 }
 void Engine::StartMenu()
 {
+    bool up = false;
+    bool down = false;
     int score_pos=0;
     std::cout << "xd" << std::endl;
     std::vector<std::pair<double,int>> leaderboard = Leaderboard("resources/scores.txt");
@@ -76,10 +78,19 @@ void Engine::StartMenu()
     }
     while (window_.isOpen())
     {
+        if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && down){down=false;}
+        else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && up){ up=false;}
         sf::Event event;
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) return;
         while (window_.pollEvent(event))
         {
+            if(event.type==sf::Event::KeyPressed)
+            {
+                if(event.key.code==sf::Keyboard::Space)
+                {
+                    return;
+                }
+            }
             if(event.type==sf::Event::MouseButtonPressed)
             {
                 return;
@@ -95,7 +106,7 @@ void Engine::StartMenu()
         text.setCharacterSize(30);
         text.setFillColor(sf::Color::Black);
         text.setString("space to shoot, arrows to control, press space to continue");
-        text.setPosition(0.5 * width,0.5*height);
+        text.setPosition(0.2 * width,0.7 * height);
         window_.draw(text);
         if(best_time!=9999999)
         {
@@ -122,8 +133,8 @@ void Engine::StartMenu()
         }
         if(leaderboard.size()>15)
         {
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) score_pos++;
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) score_pos--;
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !down){ score_pos++; down=true;}
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !up){ score_pos--; up=true;}
             if(score_pos<0)score_pos=0;
             if(score_pos>leaderboard.size()-15)score_pos=leaderboard.size()-15;
         }
