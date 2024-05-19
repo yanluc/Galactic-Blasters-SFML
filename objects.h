@@ -1,5 +1,11 @@
 #pragma once
-#include"engine.h"
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include<SFML/Window.hpp>
+#include<vector>
+#define DESTROYED 2
+#define ALIVE 1
+#define EMPTY 0
 class TexturesandSounds
 {
     public:
@@ -24,16 +30,24 @@ class GraphicalObject : public sf::Sprite
 public:
     GraphicalObject();
     ~GraphicalObject();
-    virtual void update() = 0;
+    // virtual void update() = 0;
     
+};
+class Munition : public GraphicalObject
+{
+    public:
+     Munition();
+     ~Munition();
+     virtual void update() = 0;
 };
 class Cannon : public GraphicalObject
 {
     static int hp;
     public:
+     static int health();
      Cannon(int hp);
      ~Cannon();
-     void update();
+     void update(std::vector<Munition*> &munitions);
 };
 class Alien : public GraphicalObject
 {
@@ -52,18 +66,18 @@ class Alien : public GraphicalObject
      void update();
 
 };
-class Missile : public GraphicalObject
+
+class Missile : public Munition
 {
     private:
      static sf::Time lastfired;
     public:
      Missile(int posx, int posy);
-     ~Missile();
-     static double last_fired();
+     static sf::Time last_fired();
      void update();
 
 };
-class Bomb : public GraphicalObject
+class Bomb : public Munition
 {
     protected:
      sf::Time birthtime;

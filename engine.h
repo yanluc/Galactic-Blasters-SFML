@@ -1,13 +1,6 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include<SFML/Window.hpp>
-#include<vector>
 #include"objects.h"
 // #include<format>
-#define DESTROYED 2
-#define ALIVE 1
-#define EMPTY 0
 class Engine
 {
     public:
@@ -22,6 +15,8 @@ class Engine
     void InitWindow();
     void StartMenu();
     void RunGame();
-    void GameLoop();
-
+    bool GameLoop(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions);
+    void Draw(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions);
+    void GameOver();
+    void GameWon();
 };

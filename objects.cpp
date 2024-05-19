@@ -15,15 +15,43 @@ GraphicalObject::GraphicalObject()
 }
 GraphicalObject::~GraphicalObject(){}
 int Cannon::hp;
+int Cannon::health()
+{
+    return hp;
+}
+Munition::Munition()
+{
+
+}
+Munition::~Munition(){}
+
 Cannon::Cannon(int hp)
 {
+    this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
+    this->setPosition(Constants::width/2,Constants::height*0.8);
+    this->setScale(0.5*Constants::width/1920.0,0.5*Constants::height/1080.0);
     this->hp=hp;
     this->setTexture(TexturesandSounds::cannon_texture);
 }
 Cannon::~Cannon(){}
-void Cannon::update()
+void Cannon::update(std::vector<Munition*> &munitions)
 {
-
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    {
+        this->move(-100,0);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+    {
+        this->move(100,0);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+    {
+        if ((Constants::clock.getElapsedTime() - Missile::last_fired()).asSeconds() > 0.5)
+        {
+            Munition *m = new Missile(this->getPosition().x,this->getPosition().y);
+            munitions.push_back(m);
+        }
+    }
 }
 Alien::Alien()
 {
@@ -61,13 +89,15 @@ void Alien::update()
 }
 Missile::Missile(int posx,int posy)
 {
+    lastfired=Constants::clock.getElapsedTime();
     this->setTexture(TexturesandSounds::missile_texture);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
     this->setPosition(posx,posy);
 }
-Missile::~Missile()
+sf::Time Missile::lastfired;
+sf::Time Missile::last_fired()
 {
-    
+    return lastfired;
 }
 void Missile::update()
 {

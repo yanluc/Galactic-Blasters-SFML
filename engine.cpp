@@ -19,7 +19,7 @@ Engine::~Engine()
 
 int Engine::highscore;
 int Engine::score;
-int Engine::enemies_left;
+int Engine::enemies_left=40;
 int Engine::enemies_to_spawn;
 void Engine::LoadTextures()
 {
@@ -145,22 +145,33 @@ void Engine::StartMenu()
 }
 void Engine::RunGame()
 {
+    bool gameend = false;
     window_.clear(sf::Color(240,240,220));
     std::cout << "RunGame()" << std::endl;
-    std::vector<GraphicalObject*> objects;
     Cannon cannon(100);
-    objects.push_back(&cannon);
-    enemies_left = 40;
-    enemies_to_spawn = 40;
+    std::vector<Alien> aliens;
+    std::vector<Munition*> munitions;
+
     
-    while(window_.isOpen())
+    while(window_.isOpen()||!gameend)
     {
         window_.clear(sf::Color(240,240,220));
-        GameLoop();
+        gameend = GameLoop(cannon,aliens,munitions);
         window_.display();
     }
+    if(gameend)
+    {
+        if(Cannon::health()<=0)
+        {
+            GameOver();
+        }
+        else if(enemies_left<=0)
+        {
+            GameWon();
+        }
+    }
 }
-void Engine::GameLoop()
+bool Engine::GameLoop(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions)
 {
     sf::Event event;
     
@@ -171,6 +182,61 @@ void Engine::GameLoop()
             window_.close();
         }
     }
-    //core game loop
-    
+    Draw(cannon,aliens,munitions);
+    if(Cannon::health()<=0 || enemies_left<=0)
+    {
+        std::cout << Cannon::health() << " " << enemies_left << std::endl;
+        return true;
+    }
+    return false;
+}
+void Engine::Draw(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions)
+{
+    window_.draw(cannon);
+    for(auto &alien:aliens)
+    {
+        window_.draw(alien);
+    }
+    for(auto &munition:munitions)
+    {
+        window_.draw(*munition);
+    }
+}
+void Engine::GameOver()
+{
+    std::cout << "GameOver()" << std::endl;
+    sf::Font font;
+    if (!font.loadFromFile("resources/COMICSANS.TTF"))
+    {
+        std::cout << "Font not found !" << std::endl;
+    }
+    sf::Text text;
+    text.setFont(font);
+    text.setCharacterSize(30);
+    text.setFillColor(sf::Color::Black);
+    text.setString("Game Over");
+    text.setPosition(0.5 * Constants::width,0.5 * Constants::height);
+    window_.draw(text);
+    window_.display();
+    sf::sleep(sf::seconds(3));
+    window_.close();
+}
+void Engine::GameWon()
+{
+    std::cout << "GameWon()" << std::endl;
+    sf::Font font;
+    if (!font.loadFromFile("resources/COMICSANS.TTF"))
+    {
+        std::cout << "Font not found !" << std::endl;
+    }
+    sf::Text text;
+    text.setFont(font);
+    text.setCharacterSize(30);
+    text.setFillColor(sf::Color::Black);
+    text.setString("You Won!");
+    text.setPosition(0.5 * Constants::width,0.5 * Constants::height);
+    window_.draw(text);
+    window_.display();
+    sf::sleep(sf::seconds(3));
+    window_.close();
 }
