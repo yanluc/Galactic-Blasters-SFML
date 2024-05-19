@@ -1,5 +1,22 @@
 #pragma once
 #include"engine.h"
+class TexturesandSounds
+{
+    public:
+     static sf::SoundBuffer explo_sound;
+     static sf::SoundBuffer bomb_explo_sound;
+     static sf::Texture background_texture;
+     static sf::Texture cannon_texture;
+     static sf::Texture alien_texture;
+     static sf::Texture missile_texture;
+     static sf::Texture bomb_texture;
+};
+class Constants
+{
+    public:
+     static sf::Clock clock;
+     static int width, height;
+};
 class GraphicalObject : public sf::Sprite
 {
     sf::Texture texture_;
@@ -21,6 +38,7 @@ class Cannon : public GraphicalObject
 class Alien : public GraphicalObject
 {
     protected:
+     static int grid[5][8];
      int alien_hp=1;
      int phase = 1;
      int alien_type=1;
