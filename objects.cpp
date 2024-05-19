@@ -14,6 +14,7 @@ GraphicalObject::GraphicalObject()
 
 }
 GraphicalObject::~GraphicalObject(){}
+int Cannon::hp;
 Cannon::Cannon(int hp)
 {
     this->hp=hp;
@@ -53,7 +54,7 @@ Alien::Alien()
 }
 Alien::~Alien(){}
 sf::Time Alien::last_spawn;
-int Alien::grid[5][8];
+int Alien::grid[5][8]={{2,2,0,0,0,0,2,2},{2,0,0,0,0,0,0,2},{2,0,0,0,0,0,0,2},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
 void Alien::update()
 {
 

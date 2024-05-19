@@ -3,6 +3,7 @@
 #include<time.h>
 #include<fstream>
 #include<iostream>
+#include<vector>
 Engine::Engine()
 {
     srand(time(NULL));
@@ -144,9 +145,14 @@ void Engine::StartMenu()
 }
 void Engine::RunGame()
 {
-    // InitWindow();
     window_.clear(sf::Color(240,240,220));
     std::cout << "RunGame()" << std::endl;
+    std::vector<GraphicalObject*> objects;
+    Cannon cannon(100);
+    objects.push_back(&cannon);
+    enemies_left = 40;
+    enemies_to_spawn = 40;
+    
     while(window_.isOpen())
     {
         window_.clear(sf::Color(240,240,220));

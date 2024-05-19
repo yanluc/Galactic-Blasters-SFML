@@ -29,7 +29,7 @@ public:
 };
 class Cannon : public GraphicalObject
 {
-    unsigned int hp;
+    static int hp;
     public:
      Cannon(int hp);
      ~Cannon();
