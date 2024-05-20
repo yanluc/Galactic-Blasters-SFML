@@ -48,9 +48,8 @@ bool Cannon::update(std::vector<Munition*> &munitions, sf::Time &elapsed)
     {
         if ((Constants::clock.getElapsedTime() - Missile::last_fired()).asSeconds() > 1)
         {
-            Munition *m = new Missile(this->getPosition().x,this->getPosition().y);
-        
-            std::cout << m->getPosition().x << " " << m->getPosition().y << std::endl;
+            Munition *m = new Missile(this->getPosition().x + getGlobalBounds().width/2,this->getPosition().y);
+            m->move(-m->getGlobalBounds().width/2,0);
             munitions.push_back(m);
         }
     }

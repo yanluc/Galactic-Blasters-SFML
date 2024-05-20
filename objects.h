@@ -3,7 +3,6 @@
 #include <SFML/Audio.hpp>
 #include<SFML/Window.hpp>
 #include<vector>
-#include<iostream>
 #include<cmath>
 #define DESTROYED 2
 #define ALIVE 1
