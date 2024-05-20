@@ -60,9 +60,13 @@ class Alien : public GraphicalObject
      int phase = 1;
      int alien_type=1;
      int grid_posx = -1, grid_posy = -1;
-     bool dropped_bomb;
-     double last_drop;
+     sf::Time last_drop;
+     bool droppedbomb;
     public:
+     int alientype();
+     bool dropped_bomb();
+     void bomb_dropped();
+     sf::Time lastdrop();
      static int get_position();
      static sf::Time last_spawn;
      Alien();
@@ -92,7 +96,8 @@ class Bomb : public Munition
      int damage();
      double birth();
      Bomb();
-     virtual bool update() = 0;
+     virtual bool update(sf::Time &frametime) = 0;
+     static void Spawn(std::vector<Alien> &aliens, std::vector<Munition*> &munitions);
 
 };
 class GuidedBomb : public Bomb
@@ -101,7 +106,7 @@ class GuidedBomb : public Bomb
      int dam=1;
     public:
      GuidedBomb(int posx, int posy);
-     bool update();
+     bool update(sf::Time &frametime);
 
 };
 class UnguidedBomb : public Bomb
@@ -110,7 +115,7 @@ class UnguidedBomb : public Bomb
      int dam=5;
     public:
      UnguidedBomb(int posx, int posy);
-     bool update();
+     bool update(sf::Time &frametime);
 };
 class Background : public GraphicalObject
 {

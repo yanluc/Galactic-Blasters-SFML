@@ -8,8 +8,6 @@ Engine::Engine()
 {
     srand(time(NULL));
     InitWindow();
-    LoadTextures();
-    LoadSounds();
 }
 Engine::~Engine()
 {
@@ -219,12 +217,17 @@ void Engine::Update(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Muni
 }
 void Engine::Spawn(std::vector<Alien> &aliens, std::vector<Munition*> &munitions)
 {
+    //spawn aliens
     if(enemies_to_spawn>0 && (Constants::clock.getElapsedTime()-Alien::last_spawn).asSeconds()>2)
     {
         Alien a;
         aliens.push_back(a);
         enemies_to_spawn--;
     }
+
+    //spawn bombs
+    Bomb::Spawn(aliens,munitions);
+
 }
 void Engine::GameOver()
 {
