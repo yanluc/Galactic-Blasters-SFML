@@ -4,6 +4,7 @@
 #include<SFML/Window.hpp>
 #include<vector>
 #include<iostream>
+#include<cmath>
 #define DESTROYED 2
 #define ALIVE 1
 #define EMPTY 0
@@ -54,6 +55,7 @@ class Alien : public GraphicalObject
 {
     protected:
      static int grid[5][8];
+     static int position;
      int alien_hp=1;
      int phase = 1;
      int alien_type=1;
@@ -61,10 +63,11 @@ class Alien : public GraphicalObject
      bool dropped_bomb;
      double last_drop;
     public:
+     static int get_position();
      static sf::Time last_spawn;
      Alien();
      ~Alien();
-     void update(sf::Time &frametime);
+     bool update(sf::Time &frametime);
 
 };
 

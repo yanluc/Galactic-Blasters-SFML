@@ -59,6 +59,7 @@ bool Cannon::update(std::vector<Munition*> &munitions, sf::Time &elapsed)
 Alien::Alien()
 {
     this->setTexture(TexturesandSounds::alien_texture);
+    this->setScale(0.2*Constants::width/1920.0,0.2*Constants::height/1080.0);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
     int min_dist = 1000;
     for (int i = 0; i < 5; i++)
@@ -77,6 +78,16 @@ Alien::Alien()
             }
         }
     }
+    if(grid_posy==0)
+    {
+        alien_type=2;
+        alien_hp=2;
+    }
+    else
+    {
+        alien_type=1;
+        alien_hp=1;
+    }
     Alien::grid[grid_posy][grid_posx] = ALIVE;
     dropped_bomb = false;
     last_spawn=Constants::clock.getElapsedTime();
@@ -86,14 +97,85 @@ Alien::Alien()
 Alien::~Alien(){}
 sf::Time Alien::last_spawn;
 int Alien::grid[5][8]={{2,2,0,0,0,0,2,2},{2,0,0,0,0,0,0,2},{2,0,0,0,0,0,0,2},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
-void Alien::update(sf::Time &frametime)
+int Alien::position=0;
+int Alien::get_position()
 {
-
+    return position;
+}
+bool Alien::update(sf::Time &frametime)
+{
+    if (phase == 1)
+    {
+        move(Constants::width * 0.2 * frametime.asSeconds(), 0);
+        if (getPosition().x>Constants::width*0.9)
+            phase = 2;
+        
+    }
+    else if (phase == 2 || phase == 3)
+    {
+        double delta_x = Constants::width * 0.1 * frametime.asSeconds();
+        double delta_y = Constants::height * 0.2 * frametime.asSeconds();
+        double tolerance = Constants::width*0.002;
+        double target_y, target_x;
+        if(phase == 2) 
+        {
+            target_x = Constants::width * 0.8 * grid_posx / 12  + position * Constants::width * 0.05 - Constants::width * 0.1;
+            target_y = Constants::height * 0.5 * grid_posy / 8 - Constants::height * 0.15;
+        }
+        else 
+        {
+            target_x = Constants::width * 0.8 * grid_posx / 12  + position * Constants::width * 0.05;
+            target_y = Constants::height * 0.5 * grid_posy / 8 + Constants::height * 0.05;
+        }
+        if (abs(getPosition().x - target_x) < tolerance && abs(getPosition().y - target_y) < tolerance)
+        {
+            phase = 3;
+            setPosition(target_x, target_y);
+        }
+        else
+        {
+            double dist = sqrt((getPosition().x - target_x) * (getPosition().x - target_x) + (getPosition().y - target_y) * (getPosition().y - target_y));
+            double vel_x = delta_x * (getPosition().x - target_x) / dist ;
+            double vel_y = delta_y * (getPosition().y - target_y) / dist;
+            move(-vel_x, -vel_y);
+        }
+        if(phase == 3 && getPosition().y == target_y)
+        {
+            int r = rand() % 4000;
+            if (r == 0)
+            {
+                phase = 4;
+            }
+        }
+    }
+    else if (phase == 4)
+    {
+        double delta_x = Constants::width * 0.2 * frametime.asSeconds();
+        double delta_y = Constants::height * 0.3 * frametime.asSeconds();
+        double tolerance = Constants::width*0.002;
+        double return_x = Constants::width * 0.8 * grid_posx / 12  + position * Constants::width * 0.05 - Constants::width * 0.1;
+        double return_y = Constants::height * 0.5 * grid_posy / 8 + Constants::height * 0.05;
+        double target_y = 0.9 * Constants::height;
+        double target_x = sqrt((return_y - getPosition().y)*(return_y - getPosition().y)+ getPosition().x);
+        if (getPosition().y > Constants::height * 0.9)
+        {
+            phase = 3;
+        }
+        else
+        {
+            double dist = sqrt((getPosition().x - target_x) * (getPosition().x - target_x) + (getPosition().y - target_y) * (getPosition().y - target_y));
+            double vel_x = delta_x * (getPosition().x - target_x) / dist ;
+            double vel_y = delta_y * (getPosition().y - target_y) / dist;
+            move(-vel_x, -vel_y);
+        }
+    }
+    return true;
 }
 Missile::Missile(int posx,int posy)
 {
     lastfired=Constants::clock.getElapsedTime();
     this->setTexture(TexturesandSounds::missile_texture);
+    this->setScale(0.3*Constants::width/1920.0,0.3*Constants::height/1080.0);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
     this->setPosition(posx,posy);
 }
@@ -102,13 +184,13 @@ sf::Time Missile::last_fired()
 {
     return lastfired;
 }
-bool Missile::update(sf::Time &elapsed)
+bool Missile::update(sf::Time &frametime)
 {
     if(this->getPosition().y<0)
     {
         return false;
     }
-    this->move(0,-elapsed.asSeconds()*0.2*Constants::height);
+    this->move(0,-frametime.asSeconds()*0.2*Constants::height);
     return true;
 }
 Bomb::Bomb()

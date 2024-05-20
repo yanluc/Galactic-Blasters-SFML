@@ -19,8 +19,8 @@ Engine::~Engine()
 
 int Engine::highscore;
 int Engine::score;
-int Engine::enemies_left=40;
-int Engine::enemies_to_spawn;
+int Engine::enemies_left=32;
+int Engine::enemies_to_spawn=32;
 void Engine::LoadTextures()
 {
     TexturesandSounds::background_texture.loadFromFile("resources/nightsky.png");
@@ -185,6 +185,7 @@ bool Engine::GameLoop(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Mu
     }
     Update(cannon,aliens,munitions,frametime);
     Draw(cannon,aliens,munitions);
+    Spawn(aliens,munitions);
     if(Cannon::health()<=0 || enemies_left<=0)
     {
         std::cout << Cannon::health() << " " << enemies_left << std::endl;
@@ -214,6 +215,15 @@ void Engine::Update(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Muni
     for(auto &munition:munitions)
     {
         if(!munition->update(frametime)) munitions.erase(std::remove(munitions.begin(),munitions.end(),munition),munitions.end());
+    }
+}
+void Engine::Spawn(std::vector<Alien> &aliens, std::vector<Munition*> &munitions)
+{
+    if(enemies_to_spawn>0 && (Constants::clock.getElapsedTime()-Alien::last_spawn).asSeconds()>2)
+    {
+        Alien a;
+        aliens.push_back(a);
+        enemies_to_spawn--;
     }
 }
 void Engine::GameOver()
