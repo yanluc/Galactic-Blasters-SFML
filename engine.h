@@ -18,6 +18,7 @@ class Engine
     bool GameLoop(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &elapsed);
     void Draw(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions);
     void Update(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &frametime);
+    void Collisions(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &frametime);
     void Spawn(std::vector<Alien> &aliens, std::vector<Munition*> &munitions);
     void GameOver();
     void GameWon();

@@ -55,6 +55,10 @@ bool Cannon::update(std::vector<Munition*> &munitions, sf::Time &elapsed)
     }
     return true;
 }
+void Cannon::hit()
+{
+    hp--;
+}
 Alien::Alien()
 {
     droppedbomb = false;
@@ -93,7 +97,10 @@ Alien::Alien()
     setPosition(Constants::width*0.05,Constants::height*0.1);
 
 }
-Alien::~Alien(){}
+Alien::~Alien()
+{
+    grid[grid_posy][grid_posx] = DESTROYED;
+}
 bool Alien::dropped_bomb()
 {
     return droppedbomb;
@@ -101,6 +108,14 @@ bool Alien::dropped_bomb()
 int Alien::alientype()
 {
     return alien_type;
+}
+void Alien::hit()
+{
+    alien_hp--;
+}
+int Alien::hp()
+{
+    return alien_hp;
 }
 sf::Time Alien::last_spawn;
 int Alien::grid[5][8]={{2,2,0,0,0,0,2,2},{2,0,0,0,0,0,0,2},{2,0,0,0,0,0,0,2},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
@@ -209,12 +224,39 @@ bool Missile::update(sf::Time &frametime)
     this->move(0,-frametime.asSeconds()*0.2*Constants::height);
     return true;
 }
+bool Missile::collision(GraphicalObject &cannon, std::vector<Alien> &aliens)
+{
+
+    for(int i = 0; i < aliens.size(); i++)
+    {
+        if(this->getGlobalBounds().intersects(aliens[i].getGlobalBounds()))
+        {
+            aliens[i].hit();
+            if (aliens[i].hp() == 0)
+            {
+                //remove alien from vector
+                aliens.erase(aliens.begin()+i--);
+            }
+            return true;
+        }
+    }
+    return false;
+}
 Bomb::Bomb()
 {
     this->setTexture(TexturesandSounds::bomb_texture);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
     this->setScale(0.1*Constants::width/1920.0,0.1*Constants::height/1080.0);
     this->birthtime=Constants::clock.getElapsedTime();
+}
+bool Bomb::collision(GraphicalObject &cannon, std::vector<Alien> &aliens)
+{
+    if(this->getGlobalBounds().intersects(cannon.getGlobalBounds()))
+    {
+        Cannon::hit();
+        return true;
+    }
+    return false;
 }
 UnguidedBomb::UnguidedBomb(int posx, int posy)
 {

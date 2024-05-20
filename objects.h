@@ -4,6 +4,7 @@
 #include<SFML/Window.hpp>
 #include<vector>
 #include<cmath>
+#include <algorithm>
 #define DESTROYED 2
 #define ALIVE 1
 #define EMPTY 0
@@ -34,22 +35,6 @@ public:
     // virtual void update() = 0;
     
 };
-class Munition : public GraphicalObject
-{
-    public:
-     Munition();
-     ~Munition();
-     virtual bool update(sf::Time &frametime) = 0;
-};
-class Cannon : public GraphicalObject
-{
-    static int hp;
-    public:
-     static int health();
-     Cannon(int hp);
-     ~Cannon();
-     bool update(std::vector<Munition*> &munitions, sf::Time &elapsed);
-};
 class Alien : public GraphicalObject
 {
     protected:
@@ -62,6 +47,8 @@ class Alien : public GraphicalObject
      sf::Time last_drop;
      bool droppedbomb;
     public:
+     void hit();
+     int hp();
      int alientype();
      bool dropped_bomb();
      void bomb_dropped();
@@ -73,6 +60,26 @@ class Alien : public GraphicalObject
      bool update(sf::Time &frametime);
 
 };
+class Munition : public GraphicalObject
+{
+    public:
+     Munition();
+     ~Munition();
+     virtual bool update(sf::Time &frametime) = 0;
+     virtual bool collision(GraphicalObject &object, std::vector<Alien> &aliens) = 0;
+};
+class Cannon : public GraphicalObject
+{
+    protected:
+     static int hp;
+    public:
+     static void hit();
+     static int health();
+     Cannon(int hp);
+     ~Cannon();
+     bool update(std::vector<Munition*> &munitions, sf::Time &elapsed);
+};
+
 
 class Missile : public Munition
 {
@@ -82,6 +89,7 @@ class Missile : public Munition
      Missile(int posx, int posy);
      static sf::Time last_fired();
      bool update(sf::Time &frametime);
+     bool collision(GraphicalObject &object, std::vector<Alien> &aliens);
 
 };
 class Bomb : public Munition
@@ -97,6 +105,7 @@ class Bomb : public Munition
      Bomb();
      virtual bool update(sf::Time &frametime) = 0;
      static void Spawn(std::vector<Alien> &aliens, std::vector<Munition*> &munitions);
+     bool collision(GraphicalObject &object, std::vector<Alien> &aliens);
 
 };
 class GuidedBomb : public Bomb
