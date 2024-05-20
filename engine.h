@@ -15,8 +15,9 @@ class Engine
     void InitWindow();
     void StartMenu();
     void RunGame();
-    bool GameLoop(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions);
+    bool GameLoop(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &elapsed);
     void Draw(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions);
+    void Update(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &frametime);
     void GameOver();
     void GameWon();
 };

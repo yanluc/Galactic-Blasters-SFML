@@ -3,6 +3,7 @@
 #include <SFML/Audio.hpp>
 #include<SFML/Window.hpp>
 #include<vector>
+#include<iostream>
 #define DESTROYED 2
 #define ALIVE 1
 #define EMPTY 0
@@ -38,7 +39,7 @@ class Munition : public GraphicalObject
     public:
      Munition();
      ~Munition();
-     virtual void update() = 0;
+     virtual bool update(sf::Time &frametime) = 0;
 };
 class Cannon : public GraphicalObject
 {
@@ -47,7 +48,7 @@ class Cannon : public GraphicalObject
      static int health();
      Cannon(int hp);
      ~Cannon();
-     void update(std::vector<Munition*> &munitions);
+     bool update(std::vector<Munition*> &munitions, sf::Time &elapsed);
 };
 class Alien : public GraphicalObject
 {
@@ -63,7 +64,7 @@ class Alien : public GraphicalObject
      static sf::Time last_spawn;
      Alien();
      ~Alien();
-     void update();
+     void update(sf::Time &frametime);
 
 };
 
@@ -74,7 +75,7 @@ class Missile : public Munition
     public:
      Missile(int posx, int posy);
      static sf::Time last_fired();
-     void update();
+     bool update(sf::Time &frametime);
 
 };
 class Bomb : public Munition
@@ -88,7 +89,7 @@ class Bomb : public Munition
      int damage();
      double birth();
      Bomb();
-     virtual void update() = 0;
+     virtual bool update() = 0;
 
 };
 class GuidedBomb : public Bomb
@@ -97,7 +98,7 @@ class GuidedBomb : public Bomb
      int dam=1;
     public:
      GuidedBomb(int posx, int posy);
-     void update();
+     bool update();
 
 };
 class UnguidedBomb : public Bomb
@@ -106,7 +107,7 @@ class UnguidedBomb : public Bomb
      int dam=5;
     public:
      UnguidedBomb(int posx, int posy);
-     void update();
+     bool update();
 };
 class Background : public GraphicalObject
 {

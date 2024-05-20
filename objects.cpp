@@ -34,24 +34,27 @@ Cannon::Cannon(int hp)
     this->setTexture(TexturesandSounds::cannon_texture);
 }
 Cannon::~Cannon(){}
-void Cannon::update(std::vector<Munition*> &munitions)
+bool Cannon::update(std::vector<Munition*> &munitions, sf::Time &elapsed)
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && this->getPosition().x > 0)
     {
-        this->move(-100,0);
+        this->move(-elapsed.asSeconds()*0.05*Constants::width,0);
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && this->getPosition().x < Constants::width-this->getGlobalBounds().width)
     {
-        this->move(100,0);
+        this->move(elapsed.asSeconds()*0.05*Constants::width,0);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
     {
-        if ((Constants::clock.getElapsedTime() - Missile::last_fired()).asSeconds() > 0.5)
+        if ((Constants::clock.getElapsedTime() - Missile::last_fired()).asSeconds() > 1)
         {
             Munition *m = new Missile(this->getPosition().x,this->getPosition().y);
+        
+            std::cout << m->getPosition().x << " " << m->getPosition().y << std::endl;
             munitions.push_back(m);
         }
     }
+    return true;
 }
 Alien::Alien()
 {
@@ -83,7 +86,7 @@ Alien::Alien()
 Alien::~Alien(){}
 sf::Time Alien::last_spawn;
 int Alien::grid[5][8]={{2,2,0,0,0,0,2,2},{2,0,0,0,0,0,0,2},{2,0,0,0,0,0,0,2},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
-void Alien::update()
+void Alien::update(sf::Time &frametime)
 {
 
 }
@@ -99,9 +102,14 @@ sf::Time Missile::last_fired()
 {
     return lastfired;
 }
-void Missile::update()
+bool Missile::update(sf::Time &elapsed)
 {
-
+    if(this->getPosition().y<0)
+    {
+        return false;
+    }
+    this->move(0,-elapsed.asSeconds()*0.2*Constants::height);
+    return true;
 }
 Bomb::Bomb()
 {
@@ -116,9 +124,9 @@ UnguidedBomb::UnguidedBomb(int posx, int posy)
     this->setPosition(posx,posy);
     this->birthtime=Constants::clock.getElapsedTime();
 }
-void UnguidedBomb::update()
+bool UnguidedBomb::update()
 {
-
+    return true;
 }
 GuidedBomb::GuidedBomb(int posx, int posy)
 {
@@ -127,7 +135,7 @@ GuidedBomb::GuidedBomb(int posx, int posy)
     this->setPosition(posx,posy);
     this->birthtime=Constants::clock.getElapsedTime();
 }
-void GuidedBomb::update()
+bool GuidedBomb::update()
 {
-
+    return true;
 }

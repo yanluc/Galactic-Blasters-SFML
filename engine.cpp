@@ -151,12 +151,12 @@ void Engine::RunGame()
     Cannon cannon(100);
     std::vector<Alien> aliens;
     std::vector<Munition*> munitions;
-
-    
+    sf::Time elapsed = Constants::clock.getElapsedTime();
+    window_.setFramerateLimit(60);
     while(window_.isOpen()||!gameend)
     {
         window_.clear(sf::Color(240,240,220));
-        gameend = GameLoop(cannon,aliens,munitions);
+        gameend = GameLoop(cannon,aliens,munitions, elapsed);
         window_.display();
     }
     if(gameend)
@@ -171,10 +171,11 @@ void Engine::RunGame()
         }
     }
 }
-bool Engine::GameLoop(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions)
+bool Engine::GameLoop(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &elapsed)
 {
+    sf::Time frametime=Constants::clock.getElapsedTime()-elapsed;
+    elapsed = Constants::clock.getElapsedTime();
     sf::Event event;
-    
     while(window_.pollEvent(event))
     {
         if(event.type==sf::Event::Closed)
@@ -182,6 +183,7 @@ bool Engine::GameLoop(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Mu
             window_.close();
         }
     }
+    Update(cannon,aliens,munitions,frametime);
     Draw(cannon,aliens,munitions);
     if(Cannon::health()<=0 || enemies_left<=0)
     {
@@ -200,6 +202,18 @@ void Engine::Draw(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Muniti
     for(auto &munition:munitions)
     {
         window_.draw(*munition);
+    }
+}
+void Engine::Update(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &frametime)
+{
+    cannon.update(munitions, frametime);
+    for(auto &alien:aliens)
+    {
+        alien.update(frametime);
+    }
+    for(auto &munition:munitions)
+    {
+        if(!munition->update(frametime)) munitions.erase(std::remove(munitions.begin(),munitions.end(),munition),munitions.end());
     }
 }
 void Engine::GameOver()
