@@ -151,6 +151,7 @@ void Engine::RunGame()
     std::vector<Missile*> missiles;
     sf::Time elapsed = Constants::clock.getElapsedTime();
     window_.setFramerateLimit(60);
+    Constants::start_time = Constants::clock.getElapsedTime();
     while(!gameend)
     {
         window_.clear(sf::Color(240,240,220));
@@ -160,7 +161,7 @@ void Engine::RunGame()
     if(gameend)
     {
         // std:: cout << gameend << std:: endl;
-        if(Cannon::health()<=0)
+        if(cannon.health()<=0)
         {
             GameOver();
         }
@@ -187,7 +188,7 @@ bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<A
     DrawObjects(cannon,aliens,AlienMunitions, missiles);
     Spawn(aliens,AlienMunitions, missiles);
     Collisions(cannon,aliens,AlienMunitions, missiles, frametime);
-    DrawGameElements();
+    DrawGameElements(cannon.health());
     if(cannon.health()<=0 || Alien::enemies_left<=0)
     {
         return true;
@@ -210,7 +211,7 @@ void Engine::DrawObjects(Cannon &cannon, std::vector<Alien*> &aliens, std::vecto
         window_.draw(*missile);
     }
 }
-void Engine::DrawGameElements()
+void Engine::DrawGameElements(int health)
 {
     sf::Text text;
     text.setFont(Constants::font);
@@ -222,7 +223,7 @@ void Engine::DrawGameElements()
     text.setString("Enemies left: " + std::to_string(Alien::enemies_left));
     text.setPosition(0.8 * Constants::width,0.1 * Constants::height);
     window_.draw(text);
-    text.setString("Health: " + std::to_string(Cannon::health()));
+    text.setString("Health: " + std::to_string(health));
     text.setPosition(0.8 * Constants::width,0.15 * Constants::height);
     window_.draw(text);
 
@@ -243,7 +244,11 @@ void Engine::Update(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Ali
     {
         if(!missile->update(frametime)) missiles.erase(std::remove(missiles.begin(),missiles.end(),missile),missiles.end());
     }
-    
+    double a = Constants::clock.getElapsedTime().asSeconds();
+    int b = 8;
+    bool turn = bool(int(a/b)%2);
+    if(turn) Alien::position = b - fmod(a,b)+1;
+    else Alien::position = fmod(a,b)+1;
     
 }
 void Engine::Collisions(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles, sf::Time &frametime)
@@ -316,6 +321,7 @@ void Engine::GameWon()
     {
         std::cout << "Font not found !" << std::endl;
     }
+    sf::Time time = Constants::clock.getElapsedTime() - Constants::start_time;
     sf::Text text;
     text.setFont(font);
     text.setCharacterSize(30);
@@ -323,7 +329,26 @@ void Engine::GameWon()
     text.setString("You Won!");
     text.setPosition(0.5 * Constants::width,0.5 * Constants::height);
     window_.draw(text);
+    text.setString("Score: " + std::to_string(score));
+    text.setPosition(0.5 * Constants::width,0.55 * Constants::height);
+    window_.draw(text);
+    text.setString("Time: " + std::to_string(time.asSeconds()) + " seconds");
+    text.setPosition(0.5 * Constants::width,0.6 * Constants::height);
+    window_.draw(text);
     window_.display();
-    sf::sleep(sf::seconds(3));
+    text.setString("Press escape to exit");
+    text.setPosition(0.5 * Constants::width,0.65 * Constants::height);
+    window_.draw(text);
+    while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && window_.isOpen())
+    {
+        sf::Event event;
+        while(window_.pollEvent(event))
+        {
+            if(event.type==sf::Event::Closed)
+            {
+                window_.close();
+            }
+        }
+    }
     window_.close();
 }

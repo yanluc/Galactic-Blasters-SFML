@@ -5,6 +5,7 @@
 #include<vector>
 #include<cmath>
 #include <algorithm>
+// #include "functions.h"
 #define DESTROYED 2
 #define ALIVE 1
 #define EMPTY 0
@@ -25,6 +26,7 @@ class Constants
      static sf::Font font;
      static sf::Clock clock;
      static int width, height;
+     static sf::Time start_time;
 };
 class GraphicalObject : public sf::Sprite
 {
@@ -40,18 +42,16 @@ class Alien : public GraphicalObject
 {
     protected:
      static int grid[5][8];
-     static int position;
      int alien_hp=1;
      int phase = 1;
      int alien_type=1;
      int grid_posx = -1, grid_posy = -1;
      sf::Time last_drop;
-     bool droppedbomb;
     public:
+     static double position;
      void hit();
      int hp();
      int alientype();
-     bool dropped_bomb();
      void bomb_dropped();
      sf::Time lastdrop();
      static int enemies_left;
@@ -65,10 +65,10 @@ class Alien : public GraphicalObject
 class Cannon : public GraphicalObject
 {
     protected:
-     static int hp;
+     int hp;
     public:
      void hit(int damage);
-     static int health();
+     int health();
      Cannon(int hp);
      ~Cannon();
      bool update(sf::Time &elapsed);

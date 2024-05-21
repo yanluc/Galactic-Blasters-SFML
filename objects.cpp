@@ -10,12 +10,12 @@ sf::Clock Constants::clock;
 sf::Font Constants::font;
 int Constants::width=sf::VideoMode::getDesktopMode().width;
 int Constants::height=sf::VideoMode::getDesktopMode().height;
+sf::Time Constants::start_time;
 GraphicalObject::GraphicalObject()
 {
 
 }
 GraphicalObject::~GraphicalObject(){}
-int Cannon::hp;
 int Cannon::health()
 {
     return hp;
@@ -54,7 +54,6 @@ void Cannon::hit(int damage)
 }
 Alien::Alien()
 {
-    droppedbomb = false;
     this->setTexture(TexturesandSounds::alien_texture);
     this->setScale(0.2*Constants::width/1920.0,0.2*Constants::height/1080.0);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
@@ -95,10 +94,6 @@ Alien::~Alien()
     grid[grid_posy][grid_posx] = DESTROYED;
     enemies_left--;
 }
-bool Alien::dropped_bomb()
-{
-    return droppedbomb;
-}
 int Alien::alientype()
 {
     return alien_type;
@@ -113,7 +108,7 @@ int Alien::hp()
 }
 sf::Time Alien::last_spawn;
 int Alien::grid[5][8]={{2,2,0,0,0,0,2,2},{2,0,0,0,0,0,0,2},{2,0,0,0,0,0,0,2},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
-int Alien::position=0;
+double Alien::position=0;
 int Alien::enemies_left=32;
 sf::Time Alien::lastdrop()
 {
@@ -121,7 +116,6 @@ sf::Time Alien::lastdrop()
 }
 void Alien::bomb_dropped()
 {
-    droppedbomb = true;
     last_drop = Constants::clock.getElapsedTime();
 }
 int Alien::get_position()
@@ -300,23 +294,22 @@ bool GuidedBomb::update(sf::Time &frametime)
 }
 void Bomb::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions)
 {
-    int r = rand() % (1000/aliens.size());
+    int i = 1;
+    for (i = 0; i * i < aliens.size(); i++){}
+    int r = rand() % (500/i);
     if (r == 0)
     {
         int alien_index = rand() % aliens.size();
-        if (!aliens[alien_index]->dropped_bomb())
+        aliens[alien_index]->bomb_dropped();
+        if (aliens[alien_index]->alientype() == 1)
         {
-            aliens[alien_index]->bomb_dropped();
-            if (aliens[alien_index]->alientype() == 1)
-            {
-                Bomb *b = new UnguidedBomb(aliens[alien_index]->getPosition().x,aliens[alien_index]->getPosition().y);
-                AlienMunitions.push_back(b);
-            }
-            else
-            {
-                Bomb *b = new GuidedBomb(aliens[alien_index]->getPosition().x,aliens[alien_index]->getPosition().y);
-                AlienMunitions.push_back(b);
-            }
+            Bomb *b = new UnguidedBomb(aliens[alien_index]->getPosition().x,aliens[alien_index]->getPosition().y);
+            AlienMunitions.push_back(b);
+        }
+        else
+        {
+            Bomb *b = new GuidedBomb(aliens[alien_index]->getPosition().x,aliens[alien_index]->getPosition().y);
+            AlienMunitions.push_back(b);
         }
     }
 }
