@@ -73,17 +73,17 @@ class Cannon : public GraphicalObject
      ~Cannon();
      bool update(sf::Time &elapsed);
 };
-class Munition : public GraphicalObject
+class AlienMunition : public GraphicalObject
 {
     public:
-     Munition();
-     ~Munition();
+     AlienMunition();
+     ~AlienMunition();
      virtual bool update(sf::Time &frametime) = 0;
-     virtual bool collision(Cannon &cannon, std::vector<Alien*> &aliens)=0;
+     virtual bool collision(Cannon &cannon)=0;
 };
 
 
-class Missile : public Munition
+class Missile : public GraphicalObject
 {
     private:
      static sf::Time lastfired;
@@ -91,11 +91,11 @@ class Missile : public Munition
      Missile(int posx, int posy);
      static sf::Time last_fired();
      bool update(sf::Time &frametime);
-     static void Fire(std::vector<Munition*> &munitions, Cannon &cannon);
-     bool collision(Cannon &cannon, std::vector<Alien*> &aliens);
+     static void Fire(std::vector<Missile*> &missiles, Cannon &cannon);
+     bool collision(std::vector<Alien*> &aliens);
 
 };
-class Bomb : public Munition
+class Bomb : public AlienMunition
 {
     protected:
      sf::Time birthtime;
@@ -107,8 +107,8 @@ class Bomb : public Munition
      double birth();
      Bomb();
      virtual bool update(sf::Time &frametime) = 0;
-     static void Spawn(std::vector<Alien*> &aliens, std::vector<Munition*> &munitions);
-     bool collision(Cannon &cannon, std::vector<Alien*> &aliens);
+     static void Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions);
+     bool collision(Cannon &cannon);
 
 };
 class GuidedBomb : public Bomb

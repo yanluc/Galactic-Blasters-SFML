@@ -20,11 +20,11 @@ int Cannon::health()
 {
     return hp;
 }
-Munition::Munition()
+AlienMunition::AlienMunition()
 {
 
 }
-Munition::~Munition(){}
+AlienMunition::~AlienMunition(){}
 
 Cannon::Cannon(int hp)
 {
@@ -219,19 +219,19 @@ bool Missile::update(sf::Time &frametime)
     this->move(0,-frametime.asSeconds()*0.5*Constants::height);
     return true;
 }
-void Missile::Fire(std::vector<Munition*> &munitions, Cannon &cannon)
+void Missile::Fire(std::vector<Missile*> &missiles ,Cannon &cannon)
 {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
     {
         if ((Constants::clock.getElapsedTime() - Missile::last_fired()).asSeconds() > 1)
         {
-            Munition *m = new Missile(cannon.getPosition().x + cannon.getGlobalBounds().width/2,cannon.getPosition().y);
-            m->move(-m->getGlobalBounds().width/2,0);
-            munitions.push_back(m);
+            Missile* mis = new Missile(cannon.getPosition().x + cannon.getGlobalBounds().width/2,cannon.getPosition().y);
+            mis->move(-mis->getGlobalBounds().width/2,0);
+            missiles.push_back(mis);
         }
     }
 }
-bool Missile::collision(Cannon &cannon, std::vector<Alien*> &aliens)
+bool Missile::collision(std::vector<Alien*> &aliens)
 {
 
     for(int i = 0; i < aliens.size(); i++)
@@ -242,6 +242,7 @@ bool Missile::collision(Cannon &cannon, std::vector<Alien*> &aliens)
             if (aliens[i]->hp() == 0)
             {
                 //remove alien from vector
+                delete aliens[i];
                 aliens.erase(aliens.begin()+i--);
             }
             return true;
@@ -256,7 +257,7 @@ Bomb::Bomb()
     this->setScale(0.1*Constants::width/1920.0,0.1*Constants::height/1080.0);
     this->birthtime=Constants::clock.getElapsedTime();
 }
-bool Bomb::collision(Cannon &cannon, std::vector<Alien*> &aliens)
+bool Bomb::collision(Cannon &cannon)
 {
     if(this->getGlobalBounds().intersects(cannon.getGlobalBounds()))
     {
@@ -296,9 +297,8 @@ bool GuidedBomb::update(sf::Time &frametime)
     }
     this->move(0,frametime.asSeconds()*0.2*Constants::height);
     return true;
-    return true;
 }
-void Bomb::Spawn(std::vector<Alien*> &aliens, std::vector<Munition*> &munitions)
+void Bomb::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions)
 {
     int r = rand() % (1000/aliens.size());
     if (r == 0)
@@ -310,12 +310,12 @@ void Bomb::Spawn(std::vector<Alien*> &aliens, std::vector<Munition*> &munitions)
             if (aliens[alien_index]->alientype() == 1)
             {
                 Bomb *b = new UnguidedBomb(aliens[alien_index]->getPosition().x,aliens[alien_index]->getPosition().y);
-                munitions.push_back(b);
+                AlienMunitions.push_back(b);
             }
             else
             {
                 Bomb *b = new GuidedBomb(aliens[alien_index]->getPosition().x,aliens[alien_index]->getPosition().y);
-                munitions.push_back(b);
+                AlienMunitions.push_back(b);
             }
         }
     }
