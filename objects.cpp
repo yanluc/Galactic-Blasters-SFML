@@ -48,9 +48,9 @@ bool Cannon::update(sf::Time &elapsed)
     
     return true;
 }
-void Cannon::hit()
+void Cannon::hit(int damage)
 {
-    hp--;
+    hp-=damage;
 }
 Alien::Alien()
 {
@@ -261,7 +261,7 @@ bool Bomb::collision(Cannon &cannon)
 {
     if(this->getGlobalBounds().intersects(cannon.getGlobalBounds()))
     {
-        cannon.hit();
+        cannon.hit(1);
         return true;
     }
     return false;

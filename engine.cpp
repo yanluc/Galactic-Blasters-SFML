@@ -151,7 +151,7 @@ void Engine::RunGame()
     std::vector<Missile*> missiles;
     sf::Time elapsed = Constants::clock.getElapsedTime();
     window_.setFramerateLimit(60);
-    while(window_.isOpen()||!gameend)
+    while(!gameend)
     {
         window_.clear(sf::Color(240,240,220));
         gameend = GameLoop(cannon,aliens,AlienMunitions, missiles, elapsed);
@@ -188,9 +188,8 @@ bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<A
     Spawn(aliens,AlienMunitions, missiles);
     Collisions(cannon,aliens,AlienMunitions, missiles, frametime);
     DrawGameElements();
-    if(Cannon::health()<=0 || Alien::enemies_left<=0)
+    if(cannon.health()<=0 || Alien::enemies_left<=0)
     {
-        // std::cout << Cannon::health() << " " << Alien::enemies_left << std::endl;
         return true;
     }
     return false;
@@ -240,6 +239,11 @@ void Engine::Update(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Ali
     {
         if(!AlienMunition->update(frametime)) AlienMunitions.erase(std::remove(AlienMunitions.begin(),AlienMunitions.end(),AlienMunition),AlienMunitions.end());
     }
+    for(auto &missile:missiles)
+    {
+        if(!missile->update(frametime)) missiles.erase(std::remove(missiles.begin(),missiles.end(),missile),missiles.end());
+    }
+    
     
 }
 void Engine::Collisions(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles, sf::Time &frametime)
@@ -249,7 +253,7 @@ void Engine::Collisions(Cannon &cannon, std::vector<Alien*> &aliens, std::vector
     {
         if(aliens[i]->getGlobalBounds().intersects(cannon.getGlobalBounds()))
         {
-            cannon.hit();
+            cannon.hit(10);
             delete aliens[i];
             aliens.erase(aliens.begin()+i--);
         }
@@ -259,6 +263,13 @@ void Engine::Collisions(Cannon &cannon, std::vector<Alien*> &aliens, std::vector
         if(AlienMunition->collision(cannon))
         {
             AlienMunitions.erase(std::remove(AlienMunitions.begin(),AlienMunitions.end(),AlienMunition),AlienMunitions.end());
+        }
+    }
+    for(auto &missile:missiles)
+    {
+        if(missile->collision(aliens))
+        {
+            missiles.erase(std::remove(missiles.begin(),missiles.end(),missile),missiles.end());
         }
     }
 }
@@ -279,6 +290,7 @@ void Engine::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &Ali
 void Engine::GameOver()
 {
     std::cout << "GameOver()" << std::endl;
+    window_.clear(sf::Color(240,240,220));
     sf::Font font;
     if (!font.loadFromFile("resources/COMICSANS.TTF"))
     {
@@ -298,6 +310,7 @@ void Engine::GameOver()
 void Engine::GameWon()
 {
     std::cout << "GameWon()" << std::endl;
+    window_.clear(sf::Color(240,240,220));
     sf::Font font;
     if (!font.loadFromFile("resources/COMICSANS.TTF"))
     {

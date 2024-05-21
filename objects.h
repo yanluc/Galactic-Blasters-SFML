@@ -67,7 +67,7 @@ class Cannon : public GraphicalObject
     protected:
      static int hp;
     public:
-     void hit();
+     void hit(int damage);
      static int health();
      Cannon(int hp);
      ~Cannon();
