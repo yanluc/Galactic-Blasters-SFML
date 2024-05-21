@@ -22,6 +22,7 @@ class TexturesandSounds
 class Constants
 {
     public:
+     static sf::Font font;
      static sf::Clock clock;
      static int width, height;
 };
@@ -53,6 +54,7 @@ class Alien : public GraphicalObject
      bool dropped_bomb();
      void bomb_dropped();
      sf::Time lastdrop();
+     static int enemies_left;
      static int get_position();
      static sf::Time last_spawn;
      Alien();
@@ -60,24 +62,24 @@ class Alien : public GraphicalObject
      bool update(sf::Time &frametime);
 
 };
+class Cannon : public GraphicalObject
+{
+    protected:
+     static int hp;
+    public:
+     void hit();
+     static int health();
+     Cannon(int hp);
+     ~Cannon();
+     bool update(sf::Time &elapsed);
+};
 class Munition : public GraphicalObject
 {
     public:
      Munition();
      ~Munition();
      virtual bool update(sf::Time &frametime) = 0;
-     virtual bool collision(GraphicalObject &object, std::vector<Alien> &aliens) = 0;
-};
-class Cannon : public GraphicalObject
-{
-    protected:
-     static int hp;
-    public:
-     static void hit();
-     static int health();
-     Cannon(int hp);
-     ~Cannon();
-     bool update(std::vector<Munition*> &munitions, sf::Time &elapsed);
+     virtual bool collision(Cannon &cannon, std::vector<Alien*> &aliens)=0;
 };
 
 
@@ -89,7 +91,8 @@ class Missile : public Munition
      Missile(int posx, int posy);
      static sf::Time last_fired();
      bool update(sf::Time &frametime);
-     bool collision(GraphicalObject &object, std::vector<Alien> &aliens);
+     static void Fire(std::vector<Munition*> &munitions, Cannon &cannon);
+     bool collision(Cannon &cannon, std::vector<Alien*> &aliens);
 
 };
 class Bomb : public Munition
@@ -104,8 +107,8 @@ class Bomb : public Munition
      double birth();
      Bomb();
      virtual bool update(sf::Time &frametime) = 0;
-     static void Spawn(std::vector<Alien> &aliens, std::vector<Munition*> &munitions);
-     bool collision(GraphicalObject &object, std::vector<Alien> &aliens);
+     static void Spawn(std::vector<Alien*> &aliens, std::vector<Munition*> &munitions);
+     bool collision(Cannon &cannon, std::vector<Alien*> &aliens);
 
 };
 class GuidedBomb : public Bomb

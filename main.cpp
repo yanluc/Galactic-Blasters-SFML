@@ -8,7 +8,6 @@
 int main()
 {
     Engine engine;
-    std::vector<GraphicalObject*> objects;
     engine.LoadTextures();
     engine.LoadSounds();
     engine.InitWindow();

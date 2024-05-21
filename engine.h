@@ -4,7 +4,7 @@
 class Engine
 {
     public:
-    static int highscore, score, enemies_left, enemies_to_spawn;
+    static int highscore, score, enemies_to_spawn;
     double best_time;
     sf::RenderWindow window_;
     Engine();
@@ -15,11 +15,12 @@ class Engine
     void InitWindow();
     void StartMenu();
     void RunGame();
-    bool GameLoop(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &elapsed);
-    void Draw(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions);
-    void Update(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &frametime);
-    void Collisions(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &frametime);
-    void Spawn(std::vector<Alien> &aliens, std::vector<Munition*> &munitions);
+    bool GameLoop(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Munition*> &munitions, sf::Time &elapsed);
+    void DrawObjects(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Munition*> &munitions);
+    void DrawGameElements();
+    void Update(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Munition*> &munitions, sf::Time &frametime);
+    void Collisions(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Munition*> &munitions, sf::Time &frametime);
+    void Spawn(std::vector<Alien*> &aliens, std::vector<Munition*> &munitions);
     void GameOver();
     void GameWon();
 };

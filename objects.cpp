@@ -7,6 +7,7 @@ sf::Texture TexturesandSounds::cannon_texture;
 sf::SoundBuffer TexturesandSounds::bomb_explo_sound;
 sf::SoundBuffer TexturesandSounds::explo_sound;
 sf::Clock Constants::clock;
+sf::Font Constants::font;
 int Constants::width=sf::VideoMode::getDesktopMode().width;
 int Constants::height=sf::VideoMode::getDesktopMode().height;
 GraphicalObject::GraphicalObject()
@@ -34,7 +35,7 @@ Cannon::Cannon(int hp)
     this->setTexture(TexturesandSounds::cannon_texture);
 }
 Cannon::~Cannon(){}
-bool Cannon::update(std::vector<Munition*> &munitions, sf::Time &elapsed)
+bool Cannon::update(sf::Time &elapsed)
 {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && this->getPosition().x > 0)
     {
@@ -44,15 +45,7 @@ bool Cannon::update(std::vector<Munition*> &munitions, sf::Time &elapsed)
     {
         this->move(elapsed.asSeconds()*0.05*Constants::width,0);
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-    {
-        if ((Constants::clock.getElapsedTime() - Missile::last_fired()).asSeconds() > 1)
-        {
-            Munition *m = new Missile(this->getPosition().x + getGlobalBounds().width/2,this->getPosition().y);
-            m->move(-m->getGlobalBounds().width/2,0);
-            munitions.push_back(m);
-        }
-    }
+    
     return true;
 }
 void Cannon::hit()
@@ -100,6 +93,7 @@ Alien::Alien()
 Alien::~Alien()
 {
     grid[grid_posy][grid_posx] = DESTROYED;
+    enemies_left--;
 }
 bool Alien::dropped_bomb()
 {
@@ -120,6 +114,7 @@ int Alien::hp()
 sf::Time Alien::last_spawn;
 int Alien::grid[5][8]={{2,2,0,0,0,0,2,2},{2,0,0,0,0,0,0,2},{2,0,0,0,0,0,0,2},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
 int Alien::position=0;
+int Alien::enemies_left=32;
 sf::Time Alien::lastdrop()
 {
     return last_drop;
@@ -221,18 +216,30 @@ bool Missile::update(sf::Time &frametime)
     {
         return false;
     }
-    this->move(0,-frametime.asSeconds()*0.2*Constants::height);
+    this->move(0,-frametime.asSeconds()*0.5*Constants::height);
     return true;
 }
-bool Missile::collision(GraphicalObject &cannon, std::vector<Alien> &aliens)
+void Missile::Fire(std::vector<Munition*> &munitions, Cannon &cannon)
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+    {
+        if ((Constants::clock.getElapsedTime() - Missile::last_fired()).asSeconds() > 1)
+        {
+            Munition *m = new Missile(cannon.getPosition().x + cannon.getGlobalBounds().width/2,cannon.getPosition().y);
+            m->move(-m->getGlobalBounds().width/2,0);
+            munitions.push_back(m);
+        }
+    }
+}
+bool Missile::collision(Cannon &cannon, std::vector<Alien*> &aliens)
 {
 
     for(int i = 0; i < aliens.size(); i++)
     {
-        if(this->getGlobalBounds().intersects(aliens[i].getGlobalBounds()))
+        if(this->getGlobalBounds().intersects(aliens[i]->getGlobalBounds()))
         {
-            aliens[i].hit();
-            if (aliens[i].hp() == 0)
+            aliens[i]->hit();
+            if (aliens[i]->hp() == 0)
             {
                 //remove alien from vector
                 aliens.erase(aliens.begin()+i--);
@@ -249,11 +256,11 @@ Bomb::Bomb()
     this->setScale(0.1*Constants::width/1920.0,0.1*Constants::height/1080.0);
     this->birthtime=Constants::clock.getElapsedTime();
 }
-bool Bomb::collision(GraphicalObject &cannon, std::vector<Alien> &aliens)
+bool Bomb::collision(Cannon &cannon, std::vector<Alien*> &aliens)
 {
     if(this->getGlobalBounds().intersects(cannon.getGlobalBounds()))
     {
-        Cannon::hit();
+        cannon.hit();
         return true;
     }
     return false;
@@ -291,24 +298,23 @@ bool GuidedBomb::update(sf::Time &frametime)
     return true;
     return true;
 }
-void Bomb::Spawn(std::vector<Alien> &aliens, std::vector<Munition*> &munitions)
+void Bomb::Spawn(std::vector<Alien*> &aliens, std::vector<Munition*> &munitions)
 {
     int r = rand() % (1000/aliens.size());
     if (r == 0)
     {
         int alien_index = rand() % aliens.size();
-        Alien &alien = aliens[alien_index];
-        if (!alien.dropped_bomb())
+        if (!aliens[alien_index]->dropped_bomb())
         {
-            alien.bomb_dropped();
-            if (alien.alientype() == 1)
+            aliens[alien_index]->bomb_dropped();
+            if (aliens[alien_index]->alientype() == 1)
             {
-                Bomb *b = new UnguidedBomb(alien.getPosition().x,alien.getPosition().y);
+                Bomb *b = new UnguidedBomb(aliens[alien_index]->getPosition().x,aliens[alien_index]->getPosition().y);
                 munitions.push_back(b);
             }
             else
             {
-                Bomb *b = new GuidedBomb(alien.getPosition().x,alien.getPosition().y);
+                Bomb *b = new GuidedBomb(aliens[alien_index]->getPosition().x,aliens[alien_index]->getPosition().y);
                 munitions.push_back(b);
             }
         }

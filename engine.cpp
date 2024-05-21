@@ -17,7 +17,6 @@ Engine::~Engine()
 
 int Engine::highscore;
 int Engine::score;
-int Engine::enemies_left=32;
 int Engine::enemies_to_spawn=32;
 void Engine::LoadTextures()
 {
@@ -61,8 +60,8 @@ void Engine::StartMenu()
     int score_pos=0;
     std::cout << "StartMenu()" << std::endl;
     std::vector<std::pair<double,int>> leaderboard = Leaderboard("resources/scores.txt");
-    sf::Font font;
-    if (!font.loadFromFile("resources/COMICSANS.TTF"))
+    
+    if (!Constants::font.loadFromFile("resources/COMICSANS.TTF"))
     {
         std::cout << "Font not found !" << std::endl;
     }
@@ -92,7 +91,7 @@ void Engine::StartMenu()
         }
         window_.clear(sf::Color(150,150,150));
         sf::Text text;
-        text.setFont(font);
+        text.setFont(Constants::font);
         text.setCharacterSize(30);
         text.setFillColor(sf::Color::Black);
         text.setString("space to shoot, arrows to control, press space to continue");
@@ -147,7 +146,7 @@ void Engine::RunGame()
     window_.clear(sf::Color(240,240,220));
     std::cout << "RunGame()" << std::endl;
     Cannon cannon(100);
-    std::vector<Alien> aliens;
+    std::vector<Alien*> aliens;
     std::vector<Munition*> munitions;
     sf::Time elapsed = Constants::clock.getElapsedTime();
     window_.setFramerateLimit(60);
@@ -163,13 +162,13 @@ void Engine::RunGame()
         {
             GameOver();
         }
-        else if(enemies_left<=0)
+        else if(Alien::enemies_left<=0)
         {
             GameWon();
         }
     }
 }
-bool Engine::GameLoop(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &elapsed)
+bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Munition*> &munitions, sf::Time &elapsed)
 {
     sf::Time frametime=Constants::clock.getElapsedTime()-elapsed;
     elapsed = Constants::clock.getElapsedTime();
@@ -182,50 +181,68 @@ bool Engine::GameLoop(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Mu
         }
     }
     Update(cannon,aliens,munitions,frametime);
-    Draw(cannon,aliens,munitions);
+    DrawObjects(cannon,aliens,munitions);
     Spawn(aliens,munitions);
     Collisions(cannon,aliens,munitions,frametime);
-    if(Cannon::health()<=0 || enemies_left<=0)
+    DrawGameElements();
+    if(Cannon::health()<=0 || Alien::enemies_left<=0)
     {
-        std::cout << Cannon::health() << " " << enemies_left << std::endl;
+        std::cout << Cannon::health() << " " << Alien::enemies_left << std::endl;
         return true;
     }
     return false;
 }
-void Engine::Draw(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions)
+void Engine::DrawObjects(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Munition*> &munitions)
 {
     window_.draw(cannon);
     for(auto &alien:aliens)
     {
-        window_.draw(alien);
+        window_.draw(*alien);
     }
     for(auto &munition:munitions)
     {
         window_.draw(*munition);
     }
 }
-void Engine::Update(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &frametime)
+void Engine::DrawGameElements()
 {
-    cannon.update(munitions, frametime);
+    sf::Text text;
+    text.setFont(Constants::font);
+    text.setCharacterSize(30);
+    text.setFillColor(sf::Color::Black);
+    text.setString("Score: " + std::to_string(score));
+    text.setPosition(0.8 * Constants::width,0.05 * Constants::height);
+    window_.draw(text);
+    text.setString("Enemies left: " + std::to_string(Alien::enemies_left));
+    text.setPosition(0.8 * Constants::width,0.1 * Constants::height);
+    window_.draw(text);
+    text.setString("Health: " + std::to_string(Cannon::health()));
+    text.setPosition(0.8 * Constants::width,0.15 * Constants::height);
+    window_.draw(text);
+
+}
+void Engine::Update(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Munition*> &munitions, sf::Time &frametime)
+{
+    Missile::Fire(munitions, cannon);
+    cannon.update(frametime);
     for(auto &alien:aliens)
     {
-        alien.update(frametime);
+        alien->update(frametime);
     }
     for(auto &munition:munitions)
     {
         if(!munition->update(frametime)) munitions.erase(std::remove(munitions.begin(),munitions.end(),munition),munitions.end());
     }
 }
-void Engine::Collisions(Cannon &cannon, std::vector<Alien> &aliens, std::vector<Munition*> &munitions, sf::Time &frametime)
+void Engine::Collisions(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Munition*> &munitions, sf::Time &frametime)
 {
     
     for(int i = 0; i < aliens.size();i++)
     {
-        if(aliens[i].getGlobalBounds().intersects(cannon.getGlobalBounds()))
+        if(aliens[i]->getGlobalBounds().intersects(cannon.getGlobalBounds()))
         {
-            Cannon::hit();
+            cannon.hit();
             aliens.erase(aliens.begin()+i--);
-            enemies_left--;
         }
     }
     for(auto &munition:munitions)
@@ -236,12 +253,12 @@ void Engine::Collisions(Cannon &cannon, std::vector<Alien> &aliens, std::vector<
         }
     }
 }
-void Engine::Spawn(std::vector<Alien> &aliens, std::vector<Munition*> &munitions)
+void Engine::Spawn(std::vector<Alien*> &aliens, std::vector<Munition*> &munitions)
 {
     //spawn aliens
     if(enemies_to_spawn>0 && (Constants::clock.getElapsedTime()-Alien::last_spawn).asSeconds()>2)
     {
-        Alien a;
+        Alien* a = new Alien();
         aliens.push_back(a);
         enemies_to_spawn--;
     }
