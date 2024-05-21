@@ -30,7 +30,7 @@ void Engine::LoadTextures()
 void Engine::LoadSounds()
 {
     TexturesandSounds::explo_sound.loadFromFile("resources/bomb.wav");
-    TexturesandSounds::bomb_explo_sound.loadFromFile("resources/bomb.wav");
+    TexturesandSounds::explo.setBuffer(TexturesandSounds::explo_sound);
 }
 std::vector<std::pair<double,int>> Engine::Leaderboard(char const *filename)
 {
@@ -236,14 +236,12 @@ void Engine::Update(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Ali
     {
         alien->update(frametime);
     }
-    for(auto &AlienMunition:AlienMunitions)
-    {
-        if(!AlienMunition->update(frametime)) AlienMunitions.erase(std::remove(AlienMunitions.begin(),AlienMunitions.end(),AlienMunition),AlienMunitions.end());
-    }
-    for(auto &missile:missiles)
-    {
-        if(!missile->update(frametime)) missiles.erase(std::remove(missiles.begin(),missiles.end(),missile),missiles.end());
-    }
+    AlienMunitions.erase(std::remove_if(AlienMunitions.begin(),AlienMunitions.end(),[&](AlienMunition* munition){
+        return !munition->update(frametime);
+    }),AlienMunitions.end());
+    missiles.erase(std::remove_if(missiles.begin(),missiles.end(),[&](Missile* missile){
+        return !missile->update(frametime);
+    }),missiles.end());
     double a = Constants::clock.getElapsedTime().asSeconds();
     int b = 8;
     bool turn = bool(int(a/b)%2);
@@ -253,7 +251,7 @@ void Engine::Update(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Ali
 }
 void Engine::Collisions(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles, sf::Time &frametime)
 {
-    
+    int size = aliens.size()+AlienMunitions.size()+missiles.size();
     for(int i = 0; i < aliens.size();i++)
     {
         if(aliens[i]->getGlobalBounds().intersects(cannon.getGlobalBounds()))
@@ -263,19 +261,21 @@ void Engine::Collisions(Cannon &cannon, std::vector<Alien*> &aliens, std::vector
             aliens.erase(aliens.begin()+i--);
         }
     }
-    for(auto &AlienMunition:AlienMunitions)
+    for(auto &munition:AlienMunitions)
     {
-        if(AlienMunition->collision(cannon))
-        {
-            AlienMunitions.erase(std::remove(AlienMunitions.begin(),AlienMunitions.end(),AlienMunition),AlienMunitions.end());
-        }
+        AlienMunitions.erase(std::remove_if(AlienMunitions.begin(),AlienMunitions.end(),[&](AlienMunition* munition){
+            return munition->collision(cannon);
+        }),AlienMunitions.end());
     }
     for(auto &missile:missiles)
     {
-        if(missile->collision(aliens))
-        {
-            missiles.erase(std::remove(missiles.begin(),missiles.end(),missile),missiles.end());
-        }
+        missiles.erase(std::remove_if(missiles.begin(),missiles.end(),[&](Missile* missile){
+            return missile->collision(aliens);
+        }),missiles.end());
+    }
+    if(size!=aliens.size()+AlienMunitions.size()+missiles.size())
+    {
+        TexturesandSounds::explo.play();
     }
 }
 void Engine::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles)

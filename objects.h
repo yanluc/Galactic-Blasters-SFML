@@ -19,6 +19,7 @@ class TexturesandSounds
      static sf::Texture alien_texture;
      static sf::Texture missile_texture;
      static sf::Texture bomb_texture;
+     static sf::Sound explo;
 };
 class Constants
 {

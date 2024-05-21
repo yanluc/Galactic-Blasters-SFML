@@ -6,6 +6,7 @@ sf::Texture TexturesandSounds::bomb_texture;
 sf::Texture TexturesandSounds::cannon_texture;
 sf::SoundBuffer TexturesandSounds::bomb_explo_sound;
 sf::SoundBuffer TexturesandSounds::explo_sound;
+sf::Sound TexturesandSounds::explo;
 sf::Clock Constants::clock;
 sf::Font Constants::font;
 int Constants::width=sf::VideoMode::getDesktopMode().width;
@@ -271,6 +272,7 @@ bool UnguidedBomb::update(sf::Time &frametime)
 {
     if(this->getPosition().y>Constants::height)
     {
+        TexturesandSounds::explo.play();
         return false;
     }
     this->move(0,frametime.asSeconds()*0.2*Constants::height);
@@ -287,6 +289,7 @@ bool GuidedBomb::update(sf::Time &frametime)
 {
     if(this->getPosition().y>Constants::height)
     {
+        TexturesandSounds::explo.play();
         return false;
     }
     this->move(0,frametime.asSeconds()*0.2*Constants::height);
