@@ -220,9 +220,7 @@ void Missile::Fire(std::vector<Missile*> &missiles ,Cannon &cannon)
     {
         if ((Constants::clock.getElapsedTime() - Missile::last_fired()).asSeconds() > 1)
         {
-            Missile* mis = new Missile(cannon.getPosition().x + cannon.getGlobalBounds().width/2,cannon.getPosition().y);
-            mis->move(-mis->getGlobalBounds().width/2,0);
-            missiles.push_back(mis);
+            missiles.push_back(new Missile(cannon.getPosition().x + cannon.getGlobalBounds().width/2,cannon.getPosition().y));
         }
     }
 }
@@ -240,6 +238,7 @@ bool Missile::collision(std::vector<Alien*> &aliens)
                 delete aliens[i];
                 aliens.erase(aliens.begin()+i--);
             }
+            delete this;
             return true;
         }
     }
@@ -257,6 +256,7 @@ bool Bomb::collision(Cannon &cannon)
     if(this->getGlobalBounds().intersects(cannon.getGlobalBounds()))
     {
         cannon.hit(1);
+        delete this;
         return true;
     }
     return false;

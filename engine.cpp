@@ -160,7 +160,6 @@ void Engine::RunGame()
     }
     if(gameend)
     {
-        // std:: cout << gameend << std:: endl;
         if(cannon.health()<=0)
         {
             GameOver();
@@ -283,8 +282,7 @@ void Engine::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &Ali
     //spawn aliens
     if(enemies_to_spawn>0 && (Constants::clock.getElapsedTime()-Alien::last_spawn).asSeconds()>2)
     {
-        Alien* a = new Alien();
-        aliens.push_back(a);
+        aliens.push_back(new Alien());
         enemies_to_spawn--;
     }
 
