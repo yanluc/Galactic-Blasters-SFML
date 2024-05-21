@@ -351,4 +351,7 @@ void Engine::GameWon()
         }
     }
     window_.close();
+    std::ofstream file;
+    file.open("resources/scores.txt",std::ios::app);
+    file << time.asSeconds() << " " << score << std::endl;
 }
