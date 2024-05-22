@@ -5,6 +5,7 @@
 #include<vector>
 #include<cmath>
 #include <algorithm>
+#include <iostream>
 // #include "functions.h"
 #define DESTROYED 2
 #define ALIVE 1
@@ -76,10 +77,12 @@ class Cannon : public GraphicalObject
 };
 class AlienMunition : public GraphicalObject
 {
+    protected:
+     double vel_x;
     public:
      AlienMunition();
      ~AlienMunition();
-     virtual bool update(sf::Time &frametime) = 0;
+     virtual bool update(sf::Time &frametime, double target) = 0;
      virtual bool collision(Cannon &cannon)=0;
 };
 
@@ -107,8 +110,8 @@ class Bomb : public AlienMunition
      int damage();
      double birth();
      Bomb();
-     virtual bool update(sf::Time &frametime) = 0;
-     static void Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions);
+     virtual bool update(sf::Time &frametime, double target) = 0;
+     static void Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, sf::Time &frametime);
      bool collision(Cannon &cannon);
 
 };
@@ -116,9 +119,10 @@ class GuidedBomb : public Bomb
 {
     protected:
      int dam=1;
+     double vel_y;
     public:
      GuidedBomb(int posx, int posy);
-     bool update(sf::Time &frametime);
+     bool update(sf::Time &frametime, double target);
 
 };
 class UnguidedBomb : public Bomb
@@ -127,7 +131,7 @@ class UnguidedBomb : public Bomb
      int dam=5;
     public:
      UnguidedBomb(int posx, int posy);
-     bool update(sf::Time &frametime);
+     bool update(sf::Time &frametime, double target);
 };
 class Background : public GraphicalObject
 {

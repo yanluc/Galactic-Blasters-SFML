@@ -162,7 +162,7 @@ bool Alien::update(sf::Time &frametime)
         }
         if(phase == 3 && getPosition().y == target_y)
         {
-            int r = rand() % 4000;
+            int r = rand() % int(80/frametime.asSeconds());
             if (r == 0)
             {
                 phase = 4;
@@ -246,6 +246,10 @@ bool Missile::collision(std::vector<Alien*> &aliens)
 }
 Bomb::Bomb()
 {
+    double a = Constants::clock.getElapsedTime().asSeconds();
+    int b = 8;
+    int turn =(int(a/b)%2);
+    vel_x = -(turn*2-1) * Constants::width * 0.05;
     this->setTexture(TexturesandSounds::bomb_texture);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
     this->setScale(0.1*Constants::width/1920.0,0.1*Constants::height/1080.0);
@@ -268,14 +272,15 @@ UnguidedBomb::UnguidedBomb(int posx, int posy)
     this->setPosition(posx,posy);
     this->birthtime=Constants::clock.getElapsedTime();
 }
-bool UnguidedBomb::update(sf::Time &frametime)
+bool UnguidedBomb::update(sf::Time &frametime, double target)
 {
     if(this->getPosition().y>Constants::height)
     {
         TexturesandSounds::explo.play();
+        delete this;
         return false;
     }
-    this->move(0,frametime.asSeconds()*0.2*Constants::height);
+    this->move(vel_x*frametime.asSeconds(),frametime.asSeconds()*0.2*Constants::height);
     return true;
 }
 GuidedBomb::GuidedBomb(int posx, int posy)
@@ -285,26 +290,42 @@ GuidedBomb::GuidedBomb(int posx, int posy)
     this->setPosition(posx,posy);
     this->birthtime=Constants::clock.getElapsedTime();
 }
-bool GuidedBomb::update(sf::Time &frametime)
+bool GuidedBomb::update(sf::Time &frametime, double target)
 {
     if(this->getPosition().y>Constants::height)
     {
         TexturesandSounds::explo.play();
+        delete this;
         return false;
     }
-    this->move(0,frametime.asSeconds()*0.2*Constants::height);
+
+    
+    if(getPosition().y < 0.4 * Constants::height)
+    {
+        vel_y = Constants::height * 0.05  * (3+2*(Constants::clock.getElapsedTime()-birthtime).asSeconds());
+    }
+    else
+    {
+        double rem_y = Constants::height * 0.9 - getPosition().y;
+        double delta_x = (target+0.01*Constants::width*0.5-getPosition().x) * (vel_y/rem_y);
+        if (delta_x > 0)
+            vel_x = std::min(delta_x, Constants::width * 0.08);
+        else
+            vel_x = -(std::min(-delta_x, Constants::width * 0.08));
+    }
+    move(vel_x*frametime.asSeconds(), vel_y*frametime.asSeconds());
     return true;
 }
-void Bomb::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions)
+void Bomb::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, sf::Time &frametime)
 {
-    int i = 1;
-    for (i = 0; i * i < aliens.size(); i++){}
-    int r = rand() % (500/i);
+    int i;
+    for (i = 1; i * i < aliens.size(); i++){}
+    int r = rand() % int(5.0/(frametime.asSeconds()*i)+1);
     if (r == 0)
     {
         int alien_index = rand() % aliens.size();
         aliens[alien_index]->bomb_dropped();
-        if (aliens[alien_index]->alientype() == 1)
+        if(rand()%2==0)//if (aliens[alien_index]->alientype() == 1)
         {
             Bomb *b = new UnguidedBomb(aliens[alien_index]->getPosition().x,aliens[alien_index]->getPosition().y);
             AlienMunitions.push_back(b);

@@ -185,7 +185,7 @@ bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<A
     }
     Update(cannon,aliens,AlienMunitions, missiles, frametime);
     DrawObjects(cannon,aliens,AlienMunitions, missiles);
-    Spawn(aliens,AlienMunitions, missiles);
+    Spawn(aliens,AlienMunitions, missiles, frametime);
     Collisions(cannon,aliens,AlienMunitions, missiles, frametime);
     DrawGameElements(cannon.health());
     if(cannon.health()<=0 || Alien::enemies_left<=0)
@@ -236,7 +236,7 @@ void Engine::Update(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Ali
         alien->update(frametime);
     }
     AlienMunitions.erase(std::remove_if(AlienMunitions.begin(),AlienMunitions.end(),[&](AlienMunition* munition){
-        return !munition->update(frametime);
+        return !munition->update(frametime, cannon.getPosition().x);
     }),AlienMunitions.end());
     missiles.erase(std::remove_if(missiles.begin(),missiles.end(),[&](Missile* missile){
         return !missile->update(frametime);
@@ -277,7 +277,7 @@ void Engine::Collisions(Cannon &cannon, std::vector<Alien*> &aliens, std::vector
         TexturesandSounds::explo.play();
     }
 }
-void Engine::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles)
+void Engine::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles, sf::Time &frametime)
 {
     //spawn aliens
     if(enemies_to_spawn>0 && (Constants::clock.getElapsedTime()-Alien::last_spawn).asSeconds()>2)
@@ -287,7 +287,7 @@ void Engine::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &Ali
     }
 
     //spawn bombs
-    Bomb::Spawn(aliens,AlienMunitions);
+    Bomb::Spawn(aliens,AlienMunitions, frametime);
 
 }
 void Engine::GameOver()
