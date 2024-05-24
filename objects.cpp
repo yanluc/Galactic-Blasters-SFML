@@ -1,6 +1,7 @@
 #include"objects.h"
 sf::Texture TexturesandSounds::background_texture;
 sf::Texture TexturesandSounds::alien_texture;
+sf::Texture TexturesandSounds::wreckage_texture;
 sf::Texture TexturesandSounds::missile_texture;
 sf::Texture TexturesandSounds::bomb_texture;
 sf::Texture TexturesandSounds::cannon_texture;
@@ -12,6 +13,36 @@ sf::Font Constants::font;
 int Constants::width=sf::VideoMode::getDesktopMode().width;
 int Constants::height=sf::VideoMode::getDesktopMode().height;
 sf::Time Constants::start_time;
+std::vector<sf::IntRect> Wreckage::frames;
+Wreckage::Wreckage(int posx, int posy)
+{
+    this->frame=0;
+    this->setTextureRect(frames[0]);
+    this->setTexture(TexturesandSounds::wreckage_texture);
+    this->setScale(Constants::width/1920.0,Constants::height/1080.0);
+    this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
+    this->setPosition(posx,posy);
+}
+void Wreckage::load_frame(const sf::IntRect &frame)
+{
+    frames.push_back(frame);
+}
+bool Wreckage::update(sf::Time &frametime)
+{
+    //change frame in rate of 1 frame per 0.01 seconds
+    if((Constants::clock.getElapsedTime()-last_frame).asSeconds()>0.01)
+    {
+        frame++;
+        last_frame=Constants::clock.getElapsedTime();
+    }
+    if(frame>=frames.size())
+    {
+        delete this;
+        return false;
+    }
+    this->setTextureRect(frames[frame]);
+    return true;
+}
 GraphicalObject::GraphicalObject()
 {
 
@@ -26,11 +57,11 @@ AlienMunition::AlienMunition()
 
 }
 AlienMunition::~AlienMunition(){}
-
+int Cannon::score=0;
 Cannon::Cannon(int hp)
 {
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
-    this->setPosition(Constants::width/2,Constants::height*0.8);
+    this->setPosition(Constants::width/2,Constants::height*0.85);
     this->setScale(0.5*Constants::width/1920.0,0.5*Constants::height/1080.0);
     this->hp=hp;
     this->setTexture(TexturesandSounds::cannon_texture);
@@ -52,6 +83,7 @@ bool Cannon::update(sf::Time &elapsed)
 void Cannon::hit(int damage)
 {
     hp-=damage;
+    score-=damage*5;
 }
 Alien::Alien()
 {
@@ -224,7 +256,7 @@ void Missile::Fire(std::vector<Missile*> &missiles ,Cannon &cannon)
         }
     }
 }
-bool Missile::collision(std::vector<Alien*> &aliens)
+bool Missile::collision(std::vector<Alien*> &aliens, std::vector<Wreckage*> &wreckages)
 {
 
     for(int i = 0; i < aliens.size(); i++)
@@ -234,6 +266,8 @@ bool Missile::collision(std::vector<Alien*> &aliens)
             aliens[i]->hit();
             if (aliens[i]->hp() == 0)
             {
+                Cannon::score+=aliens[i]->alientype()*10;
+                wreckages.push_back(new Wreckage(aliens[i]->getPosition().x,aliens[i]->getPosition().y));
                 //remove alien from vector
                 delete aliens[i];
                 aliens.erase(aliens.begin()+i--);
@@ -306,7 +340,7 @@ bool GuidedBomb::update(sf::Time &frametime, double target)
     }
     else
     {
-        double rem_y = Constants::height * 0.9 - getPosition().y;
+        double rem_y = Constants::height - getPosition().y;
         double delta_x = (target+0.01*Constants::width*0.5-getPosition().x) * (vel_y/rem_y);
         if (delta_x > 0)
             vel_x = std::min(delta_x, Constants::width * 0.08);

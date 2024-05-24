@@ -18,6 +18,7 @@ class TexturesandSounds
      static sf::Texture background_texture;
      static sf::Texture cannon_texture;
      static sf::Texture alien_texture;
+     static sf::Texture wreckage_texture;
      static sf::Texture missile_texture;
      static sf::Texture bomb_texture;
      static sf::Sound explo;
@@ -64,11 +65,23 @@ class Alien : public GraphicalObject
      bool update(sf::Time &frametime);
 
 };
+class Wreckage : public GraphicalObject
+{
+    protected:
+     static std::vector<sf::IntRect> frames;
+     sf::Time last_frame;
+    public:
+     int frame;
+     static void load_frame(const sf::IntRect &frame);
+     Wreckage(int posx, int posy);
+     bool update(sf::Time &frametime);
+};
 class Cannon : public GraphicalObject
 {
     protected:
      int hp;
     public:
+     static int score;
      void hit(int damage);
      int health();
      Cannon(int hp);
@@ -96,7 +109,7 @@ class Missile : public GraphicalObject
      static sf::Time last_fired();
      bool update(sf::Time &frametime);
      static void Fire(std::vector<Missile*> &missiles, Cannon &cannon);
-     bool collision(std::vector<Alien*> &aliens);
+     bool collision(std::vector<Alien*> &aliens, std::vector<Wreckage*> &wreckages);
 
 };
 class Bomb : public AlienMunition
