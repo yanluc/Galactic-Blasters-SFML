@@ -19,7 +19,8 @@ int main()
 
 /*
 copyright:
-    background image:
+    background images:
+    https://www.freepik.com/free-vector/urban-city-background-video-conferencing_10137813.htm by freepik on freepik.com
     https://www.freepik.com/free-vector/explore-beauty-night-space-outdoor-events_39455975.htm by starline on freepik.com
     alien spaceship image:
     https://www.freepik.com/free-vector/sticker-template-with-unidentified-flying-object-ufo-isolated_16254210.htm by brgfx on freepik.com

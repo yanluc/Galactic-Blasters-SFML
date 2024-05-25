@@ -96,7 +96,7 @@ class AlienMunition : public GraphicalObject
      AlienMunition();
      ~AlienMunition();
      virtual bool update(sf::Time &frametime, double target) = 0;
-     virtual bool collision(Cannon &cannon)=0;
+     virtual bool collision(Cannon &cannon, std::vector<Wreckage*> &wreckages)=0;
 };
 
 
@@ -125,7 +125,7 @@ class Bomb : public AlienMunition
      Bomb();
      virtual bool update(sf::Time &frametime, double target) = 0;
      static void Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, sf::Time &frametime);
-     bool collision(Cannon &cannon);
+     bool collision(Cannon &cannon, std::vector<Wreckage*> &wreckages);
 
 };
 class GuidedBomb : public Bomb
@@ -149,4 +149,5 @@ class UnguidedBomb : public Bomb
 class Background : public GraphicalObject
 {
     public:
+    Background();
 };

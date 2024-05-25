@@ -289,11 +289,14 @@ Bomb::Bomb()
     this->setScale(0.1*Constants::width/1920.0,0.1*Constants::height/1080.0);
     this->birthtime=Constants::clock.getElapsedTime();
 }
-bool Bomb::collision(Cannon &cannon)
+bool Bomb::collision(Cannon &cannon, std::vector<Wreckage*> &wreckages)
 {
     if(this->getGlobalBounds().intersects(cannon.getGlobalBounds()))
     {
         cannon.hit(1);
+        int add_height=0;
+        if(this->getPosition().y<Constants::height*0.85) add_height=Constants::height*0.05;
+        wreckages.push_back(new Wreckage(this->getPosition().x,this->getPosition().y+add_height));
         delete this;
         return true;
     }
@@ -359,7 +362,7 @@ void Bomb::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &Alien
     {
         int alien_index = rand() % aliens.size();
         aliens[alien_index]->bomb_dropped();
-        if(rand()%2==0)//if (aliens[alien_index]->alientype() == 1)
+        if(rand()%2==0)
         {
             Bomb *b = new UnguidedBomb(aliens[alien_index]->getPosition().x,aliens[alien_index]->getPosition().y);
             AlienMunitions.push_back(b);
@@ -370,4 +373,12 @@ void Bomb::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &Alien
             AlienMunitions.push_back(b);
         }
     }
+}
+Background::Background()
+{
+    this->setTexture(TexturesandSounds::background_texture);
+    const double x = TexturesandSounds::background_texture.getSize().x;
+    const double y = TexturesandSounds::background_texture.getSize().y;
+    this->setScale(Constants::width/x,Constants::height/y);
+    this->setPosition(0,0);
 }

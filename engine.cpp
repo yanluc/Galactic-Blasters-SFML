@@ -24,7 +24,7 @@ void Engine::LoadTextures()
     TexturesandSounds::alien_texture.loadFromFile("resources/alien.png");
     TexturesandSounds::missile_texture.loadFromFile("resources/missile.png");
     TexturesandSounds::bomb_texture.loadFromFile("resources/bomb.png");
-
+    
     TexturesandSounds::wreckage_texture.loadFromFile("resources/wreckage.png");
     int texture_wreckage_w = 93;
     int texture_wreckage_h = 88;
@@ -38,6 +38,7 @@ void Engine::LoadTextures()
         }
     }
     
+    TexturesandSounds::background_texture.loadFromFile("resources/nightsky.png");
 
 }
 void Engine::LoadSounds()
@@ -159,6 +160,7 @@ void Engine::RunGame()
     window_.clear(sf::Color(240,240,220));
     std::cout << "RunGame()" << std::endl;
     Cannon cannon(100);
+    Background background;
     std::vector<Alien*> aliens;
     std::vector<AlienMunition*> AlienMunitions;
     std::vector<Missile*> missiles;
@@ -168,7 +170,7 @@ void Engine::RunGame()
     Constants::start_time = Constants::clock.getElapsedTime();
     while(!gameend)
     {
-        window_.clear(sf::Color(240,240,220));
+        window_.draw(background);
         gameend = GameLoop(cannon,aliens,wreckages, AlienMunitions, missiles, elapsed);
         window_.display();
     }
@@ -235,13 +237,13 @@ void Engine::DrawGameElements(int health)
     text.setCharacterSize(30);
     text.setFillColor(sf::Color::Black);
     text.setString("Score: " + std::to_string(Cannon::score));
-    text.setPosition(0.8 * Constants::width,0.05 * Constants::height);
+    text.setPosition(0.85 * Constants::width,0.05 * Constants::height);
     window_.draw(text);
     text.setString("Enemies left: " + std::to_string(Alien::enemies_left));
-    text.setPosition(0.8 * Constants::width,0.1 * Constants::height);
+    text.setPosition(0.85 * Constants::width,0.1 * Constants::height);
     window_.draw(text);
     text.setString("Health: " + std::to_string(health));
-    text.setPosition(0.8 * Constants::width,0.15 * Constants::height);
+    text.setPosition(0.85 * Constants::width,0.15 * Constants::height);
     window_.draw(text);
 
 }
@@ -279,6 +281,7 @@ void Engine::Collisions(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<
         if(aliens[i]->getGlobalBounds().intersects(cannon.getGlobalBounds()))
         {
             cannon.hit(10);
+            wreckages.push_back(new Wreckage(aliens[i]->getPosition().x,aliens[i]->getPosition().y));
             delete aliens[i];
             aliens.erase(aliens.begin()+i--);
         }
@@ -286,7 +289,7 @@ void Engine::Collisions(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<
     for(auto &munition:AlienMunitions)
     {
         AlienMunitions.erase(std::remove_if(AlienMunitions.begin(),AlienMunitions.end(),[&](AlienMunition* munition){
-            return munition->collision(cannon);
+            return munition->collision(cannon, wreckages);
         }),AlienMunitions.end());
     }
     for(auto &missile:missiles)
