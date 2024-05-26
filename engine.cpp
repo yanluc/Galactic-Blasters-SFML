@@ -270,42 +270,43 @@ void Engine::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &Ali
 void Engine::GameOver()
 {
     std::cout << "GameOver()" << std::endl;
-    window_.clear(sf::Color(240,240,220));
-    sf::Font font;
-    if (!font.loadFromFile("resources/COMICSANS.TTF"))
-    {
-        std::cout << "Font not found !" << std::endl;
-    }
+    window_.draw(*(new Background(TexturesandSounds::background_start_texture)));
+    sf::Font font=Constants::font;
     sf::Text text;
     text.setFont(font);
     text.setCharacterSize(30);
-    text.setFillColor(sf::Color::Black);
+    text.setFillColor(sf::Color::White);
     text.setString("Game Over");
-    text.setPosition(0.5 * Constants::width,0.5 * Constants::height);
+    text.setPosition(0.4 * Constants::width,0.5 * Constants::height);
     window_.draw(text);
     window_.display();
-    sf::sleep(sf::seconds(3));
-    window_.close();
+    while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && window_.isOpen())
+    {
+        sf::Event event;
+        while(window_.pollEvent(event))
+        {
+            if(event.type==sf::Event::Closed)
+            {
+                window_.close();
+            }
+        }
+    }
 }
 void Engine::GameWon()
 {
     std::cout << "GameWon()" << std::endl;
-    window_.clear(sf::Color(240,240,220));
-    sf::Font font;
-    if (!font.loadFromFile("resources/COMICSANS.TTF"))
-    {
-        std::cout << "Font not found !" << std::endl;
-    }
+    window_.draw(*(new Background(TexturesandSounds::background_start_texture)));
+    sf::Font font=Constants::font;
     sf::Time time = Constants::clock.getElapsedTime() - Constants::start_time;
     sf::Text text;
     text.setFont(font);
     text.setCharacterSize(30);
-    text.setFillColor(sf::Color::Black);
+    text.setFillColor(sf::Color::White);
     text.setString("You Won!");
-    text.setPosition(0.5 * Constants::width,0.5 * Constants::height);
+    text.setPosition(0.4 * Constants::width,0.5 * Constants::height);
     window_.draw(text);
     text.setString("Score: " + std::to_string(Cannon::score));
-    text.setPosition(0.5 * Constants::width,0.55 * Constants::height);
+    text.setPosition(0.4 * Constants::width,0.55 * Constants::height);
     window_.draw(text);
     text.setString("Time: " + std::to_string(time.asSeconds()) + " seconds");
     text.setPosition(0.5 * Constants::width,0.6 * Constants::height);
@@ -325,7 +326,6 @@ void Engine::GameWon()
             }
         }
     }
-    window_.close();
     std::ofstream file;
     file.open("resources/scores.txt",std::ios::app);
     file << time.asSeconds() << " " << Cannon::score << std::endl;
