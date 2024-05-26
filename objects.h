@@ -6,6 +6,7 @@
 #include<cmath>
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 // #include "functions.h"
 #define DESTROYED 2
 #define ALIVE 1
@@ -16,6 +17,7 @@ class TexturesandSounds
      static sf::SoundBuffer explo_sound;
      static sf::SoundBuffer bomb_explo_sound;
      static sf::Texture background_texture;
+     static sf::Texture background_start_texture;
      static sf::Texture cannon_texture;
      static sf::Texture alien_texture;
      static sf::Texture wreckage_texture;
@@ -149,5 +151,23 @@ class UnguidedBomb : public Bomb
 class Background : public GraphicalObject
 {
     public:
-    Background();
+    Background(sf::Texture &texture);
+};
+class StartMenuElements
+{
+    protected:
+     int score_pos=0;
+     int selected=0;
+     static int highscore;
+     double best_time;
+     std::vector<std::pair<double,int>> leaderboard;
+     std::vector<std::pair<double,int>> GetLeaderboard(char const *filename);
+     bool start_game=false;
+    public:
+     bool startgame();
+     void ViewLeaderboard(sf::RenderWindow &window, Background &start_background, bool &up, bool &down);
+     enum screen{MAIN, LEADERBOARD, GAME};
+     int current_screen;
+     void start_menu(sf::RenderWindow &window, Background &start_background, bool &up, bool &down);
+
 };
