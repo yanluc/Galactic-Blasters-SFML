@@ -300,6 +300,9 @@ void Engine::GameOver()
     text.setString("Game Over");
     text.setPosition(0.45 * Constants::width,0.5 * Constants::height);
     window_.draw(text);
+    text.setString("Press escape to exit");
+    text.setPosition(0.45 * Constants::width,0.55 * Constants::height);
+    window_.draw(text);
     window_.display();
     while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && window_.isOpen())
     {

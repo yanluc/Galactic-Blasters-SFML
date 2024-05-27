@@ -16,8 +16,8 @@ void Wreckage::load_frame(const sf::IntRect &frame)
 }
 bool Wreckage::update(sf::Time &frametime)
 {
-    //change frame in rate of 1 frame per 0.01 seconds
-    if((Constants::clock.getElapsedTime()-last_frame).asSeconds()>0.01)
+    //change frame in rate of 1 frame per 0.02 seconds
+    if((Constants::clock.getElapsedTime()-last_frame).asSeconds()>0.02)
     {
         frame++;
         last_frame=Constants::clock.getElapsedTime();
@@ -30,11 +30,6 @@ bool Wreckage::update(sf::Time &frametime)
     this->setTextureRect(frames[frame]);
     return true;
 }
-GraphicalObject::GraphicalObject()
-{
-
-}
-GraphicalObject::~GraphicalObject(){}
 int Cannon::health()
 {
     return hp;
@@ -118,7 +113,7 @@ Alien::Alien()
     }
     Alien::grid[grid_posy][grid_posx] = ALIVE;
     last_spawn=Constants::clock.getElapsedTime();
-    setPosition(Constants::width*0.05,Constants::height*0.1);
+    setPosition(-Constants::width*0.05,Constants::height*0.1);
 
 }
 Alien::~Alien()
@@ -362,6 +357,7 @@ bool GuidedBomb::update(sf::Time &frametime, double target)
         else
             vel_x = -(std::min(-delta_x, Constants::width * 0.08));
     }
+    if(vel_y==0) vel_y=Constants::height*0.05;
     move(vel_x*frametime.asSeconds(), vel_y*frametime.asSeconds());
     return true;
 }

@@ -50,7 +50,7 @@ void StartMenuElements::start_menu(sf::RenderWindow &window, Background &start_b
     text.setPosition(Constants::width*0.4,Constants::height*0.4);
     if(selected == 1) text.setFillColor(color);
     else text.setFillColor(sf::Color::White);
-    text.setString("View leaderboard");
+    text.setString("View previous scores");
     window.draw(text);
     text.setPosition(Constants::width*0.4,Constants::height*0.5);
     if(selected == 2) text.setFillColor(color);
@@ -69,10 +69,10 @@ void StartMenuElements::ViewLeaderboard(sf::RenderWindow &window, Background &st
     sf::Text text;
     window.draw(start_background);
     text.setFont(Constants::font);
-    text.setCharacterSize(50);
+    text.setCharacterSize(Constants::height/20);
     text.setFillColor(sf::Color::White);
     text.setPosition(Constants::width*0.4,Constants::height*0.1);
-    text.setString("Leaderboard");
+    text.setString("Previous scores");
     window.draw(text);
 
     if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && down){down=false;}
@@ -80,7 +80,7 @@ void StartMenuElements::ViewLeaderboard(sf::RenderWindow &window, Background &st
 
     if(leaderboard.size()>15)
         {
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !down){ score_pos+=2; down=true;}
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !down){ score_pos++; down=true;}
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !up){ score_pos--; up=true;}
             if(score_pos<0)score_pos=0;
             if(score_pos>leaderboard.size()-15)score_pos=leaderboard.size()-15;

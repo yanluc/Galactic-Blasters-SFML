@@ -9,17 +9,7 @@
 #define ALIVE 1
 #define EMPTY 0
 
-class GraphicalObject : public sf::Sprite
-{
-    sf::Texture texture_;
-
-public:
-    GraphicalObject();
-    ~GraphicalObject();
-    // virtual void update() = 0;
-    
-};
-class Alien : public GraphicalObject
+class Alien : public sf::Sprite
 {
     protected:
      static int grid[5][8];
@@ -43,7 +33,7 @@ class Alien : public GraphicalObject
      bool update(sf::Time &frametime);
 
 };
-class PowerUp : public GraphicalObject
+class PowerUp : public sf::Sprite
 {
     protected:
      int type;
@@ -57,7 +47,7 @@ class PowerUp : public GraphicalObject
      ~PowerUp();
      bool update(sf::Time &frametime);
 };
-class Wreckage : public GraphicalObject
+class Wreckage : public sf::Sprite
 {
     protected:
      static std::vector<sf::IntRect> frames;
@@ -68,7 +58,7 @@ class Wreckage : public GraphicalObject
      Wreckage(int posx, int posy);
      bool update(sf::Time &frametime);
 };
-class Cannon : public GraphicalObject
+class Cannon : public sf::Sprite
 {
     protected:
      int hp;
@@ -83,7 +73,7 @@ class Cannon : public GraphicalObject
      ~Cannon();
      bool update(sf::Time &elapsed);
 };
-class AlienMunition : public GraphicalObject
+class AlienMunition : public sf::Sprite
 {
     protected:
      double vel_x;
@@ -95,7 +85,7 @@ class AlienMunition : public GraphicalObject
 };
 
 
-class Missile : public GraphicalObject
+class Missile : public sf::Sprite
 {
     private:
      static sf::Time lastfired;
@@ -142,7 +132,7 @@ class UnguidedBomb : public Bomb
      UnguidedBomb(int posx, int posy);
      bool update(sf::Time &frametime, double target);
 };
-class Background : public GraphicalObject
+class Background : public sf::Sprite
 {
     public:
     Background(sf::Texture &texture);
