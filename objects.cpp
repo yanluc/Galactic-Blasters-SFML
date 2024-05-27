@@ -6,6 +6,8 @@ sf::Texture TexturesandSounds::wreckage_texture;
 sf::Texture TexturesandSounds::missile_texture;
 sf::Texture TexturesandSounds::bomb_texture;
 sf::Texture TexturesandSounds::cannon_texture;
+sf::Texture TexturesandSounds::heart_texture;
+sf::Texture TexturesandSounds::shield_texture;
 sf::SoundBuffer TexturesandSounds::bomb_explo_sound;
 sf::SoundBuffer TexturesandSounds::explo_sound;
 sf::Sound TexturesandSounds::explo;
@@ -78,13 +80,25 @@ bool Cannon::update(sf::Time &elapsed)
     {
         this->move(elapsed.asSeconds()*0.05*Constants::width,0);
     }
-    
+    if(shield && (Constants::clock.getElapsedTime()-shield_time).asSeconds()>3)
+    {
+        shield=false;
+    }
     return true;
 }
 void Cannon::hit(int damage)
 {
-    hp-=damage;
-    score-=damage*5;
+    if(!shield)
+    {
+        hp-=damage;
+        score-=damage*5;
+    }
+}
+void Cannon::shield_on()
+{
+    shield=true;
+    score+=5;
+    shield_time=Constants::clock.getElapsedTime();
 }
 Alien::Alien()
 {
@@ -283,7 +297,8 @@ bool Missile::collision(PowerUp* &power_up, Cannon &cannon)
 {
     if(this->getGlobalBounds().intersects(power_up->getGlobalBounds()))
     {
-        cannon.hit(-1);
+        if(power_up->get_type()==PowerUp::HEALTH)cannon.hit(-1);
+        else if (power_up->get_type()==PowerUp::SHIELD)cannon.shield_on();
         delete power_up;
         power_up=NULL;
         delete this;
@@ -400,9 +415,10 @@ sf::Time PowerUp::last_spawn;
 PowerUp::PowerUp(int type)
 {
     last_spawn=Constants::clock.getElapsedTime();
-    this->setTexture(TexturesandSounds::alien_texture);
+    if(type==HEALTH) this->setTexture(TexturesandSounds::heart_texture);
+    else if(type==SHIELD) this->setTexture(TexturesandSounds::shield_texture);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
-    this->setScale(0.5*Constants::width/1920.0,0.5*Constants::height/1080.0);
+    this->setScale(0.05*Constants::width/1920.0,0.05*Constants::height/1080.0);
     this->setPosition(0,Constants::height*0.1);
     exists=true;
     this->type=type;
@@ -417,9 +433,12 @@ bool PowerUp::update(sf::Time &frametime)
     {
         return false;
     }
-    //move on parabolic path with vertex at (0.5 * width ,0.95*height)
-    double new_y=(this->getPosition().x+0.1*Constants::width)*(this->getPosition().x-1.1*Constants::width);
-    new_y=Constants::height*0.4;
+    // double new_y=(this->getPosition().x+0.1*Constants::width)*(this->getPosition().x-1.1*Constants::width);
+    double new_y=Constants::height*0.4;
     this->setPosition(this->getPosition().x+0.1*Constants::width*frametime.asSeconds(), new_y);
     return true;
+}
+int PowerUp::get_type()
+{
+    return type;
 }

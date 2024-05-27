@@ -24,6 +24,8 @@ void Engine::LoadTextures()
     TexturesandSounds::alien_texture.loadFromFile("resources/alien.png");
     TexturesandSounds::missile_texture.loadFromFile("resources/missile.png");
     TexturesandSounds::bomb_texture.loadFromFile("resources/bomb.png");
+    TexturesandSounds::heart_texture.loadFromFile("resources/heart.png");
+    TexturesandSounds::shield_texture.loadFromFile("resources/shield.png");
     
     TexturesandSounds::wreckage_texture.loadFromFile("resources/wreckage.png");
     int texture_wreckage_w = 93;

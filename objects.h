@@ -23,6 +23,8 @@ class TexturesandSounds
      static sf::Texture wreckage_texture;
      static sf::Texture missile_texture;
      static sf::Texture bomb_texture;
+     static sf::Texture heart_texture;
+     static sf::Texture shield_texture;
      static sf::Sound explo;
 };
 class Constants
@@ -73,6 +75,7 @@ class PowerUp : public GraphicalObject
      int type;
      
     public:
+     int get_type();
      static bool exists;
      static sf::Time last_spawn;
      enum types{HEALTH, SHIELD};
@@ -95,7 +98,10 @@ class Cannon : public GraphicalObject
 {
     protected:
      int hp;
+     bool shield=false;
+     sf::Time shield_time;
     public:
+     void shield_on();
      static int score;
      void hit(int damage);
      int health();

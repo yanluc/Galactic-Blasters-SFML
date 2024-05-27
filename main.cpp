@@ -27,4 +27,8 @@ copyright:
     https://www.freepik.com/free-vector/sticker-template-with-unidentified-flying-object-ufo-isolated_16254210.htm by brgfx on freepik.com
     explosion:
     https://toppng.com/show_download/163425/explosion-sprite-png-2d-explosion-sprite-sheet
+    health powerup:
+    https://pngimg.com/image/51328
+    shield powerup:
+    https://www.hiclipart.com/free-transparent-background-png-clipart-idpsw/download?utm_medium=social&utm_source=nohat&utm_campaign=free_resource
 */
