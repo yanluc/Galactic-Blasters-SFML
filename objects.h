@@ -1,40 +1,14 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include<SFML/Window.hpp>
 #include<vector>
 #include<cmath>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
-// #include "functions.h"
+#include "namespaces.h"
 #define DESTROYED 2
 #define ALIVE 1
 #define EMPTY 0
-class TexturesandSounds
-{
-    public:
-     static sf::SoundBuffer explo_sound;
-     static sf::SoundBuffer bomb_explo_sound;
-     static sf::Texture background_texture;
-     static sf::Texture background_start_texture;
-     static sf::Texture cannon_texture;
-     static sf::Texture alien_texture;
-     static sf::Texture wreckage_texture;
-     static sf::Texture missile_texture;
-     static sf::Texture bomb_texture;
-     static sf::Texture heart_texture;
-     static sf::Texture shield_texture;
-     static sf::Sound explo;
-};
-class Constants
-{
-    public:
-     static sf::Font font;
-     static sf::Clock clock;
-     static int width, height;
-     static sf::Time start_time;
-};
+
 class GraphicalObject : public sf::Sprite
 {
     sf::Texture texture_;

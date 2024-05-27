@@ -1,21 +1,5 @@
 #include"objects.h"
-sf::Texture TexturesandSounds::background_texture;
-sf::Texture TexturesandSounds::background_start_texture;
-sf::Texture TexturesandSounds::alien_texture;
-sf::Texture TexturesandSounds::wreckage_texture;
-sf::Texture TexturesandSounds::missile_texture;
-sf::Texture TexturesandSounds::bomb_texture;
-sf::Texture TexturesandSounds::cannon_texture;
-sf::Texture TexturesandSounds::heart_texture;
-sf::Texture TexturesandSounds::shield_texture;
-sf::SoundBuffer TexturesandSounds::bomb_explo_sound;
-sf::SoundBuffer TexturesandSounds::explo_sound;
-sf::Sound TexturesandSounds::explo;
-sf::Clock Constants::clock;
-sf::Font Constants::font;
-int Constants::width=sf::VideoMode::getDesktopMode().width;
-int Constants::height=sf::VideoMode::getDesktopMode().height;
-sf::Time Constants::start_time;
+
 std::vector<sf::IntRect> Wreckage::frames;
 Wreckage::Wreckage(int posx, int posy)
 {
