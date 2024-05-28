@@ -12,6 +12,7 @@ namespace TexturesandSounds
     sf::Texture bomb_texture;
     sf::Texture heart_texture;
     sf::Texture shield_texture;
+    sf::Texture missile_texture_animated[10];
     sf::Sound explo;
 };
 namespace Constants

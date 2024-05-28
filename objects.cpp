@@ -220,9 +220,10 @@ bool Alien::update(sf::Time &frametime)
 }
 Missile::Missile(int posx,int posy)
 {
+    last_frame=Constants::clock.getElapsedTime();
     lastfired=Constants::clock.getElapsedTime();
-    this->setTexture(TexturesandSounds::missile_texture);
-    this->setScale(0.3*Constants::width/1920.0,0.3*Constants::height/1080.0);
+    this->setTexture(TexturesandSounds::missile_texture_animated[0]);
+    this->setScale(0.2*Constants::width/1920.0,0.2*Constants::height/1080.0);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
     this->setPosition(posx,posy);
 }
@@ -236,6 +237,13 @@ bool Missile::update(sf::Time &frametime)
     if(this->getPosition().y<0)
     {
         return false;
+    }
+    if((Constants::clock.getElapsedTime()-last_frame).asSeconds()>0.1)
+    {
+        frame++;
+        if(frame>9) frame=0;
+        this->setTexture(TexturesandSounds::missile_texture_animated[frame]);
+        last_frame=Constants::clock.getElapsedTime();
     }
     this->move(0,-frametime.asSeconds()*0.5*Constants::height);
     return true;
@@ -333,6 +341,8 @@ GuidedBomb::GuidedBomb(int posx, int posy)
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
     this->setPosition(posx,posy);
     this->birthtime=Constants::clock.getElapsedTime();
+    if(posy<Constants::height*0.4) vel_y=Constants::height*0.05;
+    else vel_y=Constants::height*0.15;
 }
 bool GuidedBomb::update(sf::Time &frametime, double target)
 {
@@ -357,11 +367,11 @@ bool GuidedBomb::update(sf::Time &frametime, double target)
         else
             vel_x = -(std::min(-delta_x, Constants::width * 0.08));
     }
-    if(vel_y==0) vel_y=Constants::height*0.05;
+    if(getPosition().y>Constants::height*0.4 && vel_y<Constants::height*0.1) vel_y=Constants::height*0.1;
     move(vel_x*frametime.asSeconds(), vel_y*frametime.asSeconds());
     return true;
 }
-void Bomb::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, sf::Time &frametime)
+void AlienMunition::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, sf::Time &frametime)
 {
     int i;
     for (i = 1; i * i < aliens.size(); i++){}
@@ -398,7 +408,7 @@ PowerUp::PowerUp(int type)
     if(type==HEALTH) this->setTexture(TexturesandSounds::heart_texture);
     else if(type==SHIELD) this->setTexture(TexturesandSounds::shield_texture);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
-    this->setScale(0.05*Constants::width/1920.0,0.05*Constants::height/1080.0);
+    this->setScale(0.1*Constants::width/1920.0,0.1*Constants::height/1080.0);
     this->setPosition(0,Constants::height*0.1);
     exists=true;
     this->type=type;

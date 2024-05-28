@@ -80,6 +80,7 @@ class AlienMunition : public sf::Sprite
     public:
      AlienMunition();
      ~AlienMunition();
+     static void Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, sf::Time &frametime);
      virtual bool update(sf::Time &frametime, double target) = 0;
      virtual bool collision(Cannon &cannon, std::vector<Wreckage*> &wreckages)=0;
 };
@@ -88,6 +89,8 @@ class AlienMunition : public sf::Sprite
 class Missile : public sf::Sprite
 {
     private:
+     int frame=0;
+     sf::Time last_frame;
      static sf::Time lastfired;
     public:
      Missile(int posx, int posy);
@@ -110,7 +113,6 @@ class Bomb : public AlienMunition
      double birth();
      Bomb();
      virtual bool update(sf::Time &frametime, double target) = 0;
-     static void Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, sf::Time &frametime);
      bool collision(Cannon &cannon, std::vector<Wreckage*> &wreckages);
 
 };

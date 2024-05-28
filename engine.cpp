@@ -22,7 +22,7 @@ void Engine::LoadTextures()
     TexturesandSounds::background_texture.loadFromFile("resources/nightsky.png");
     TexturesandSounds::cannon_texture.loadFromFile("resources/cannon.png");
     TexturesandSounds::alien_texture.loadFromFile("resources/alien.png");
-    TexturesandSounds::missile_texture.loadFromFile("resources/missile.png");
+    // TexturesandSounds::missile_texture.loadFromFile("resources/missile.png");
     TexturesandSounds::bomb_texture.loadFromFile("resources/bomb.png");
     TexturesandSounds::heart_texture.loadFromFile("resources/heart.png");
     TexturesandSounds::shield_texture.loadFromFile("resources/shield.png");
@@ -42,6 +42,12 @@ void Engine::LoadTextures()
     TexturesandSounds::background_start_texture.loadFromFile("resources/start-background.png");
     TexturesandSounds::background_texture.loadFromFile("resources/nightsky.png");
 
+    for (int i = 0; i < 10; i++)
+    {
+        char filename[50];
+        sprintf(filename,"resources/missile/Missile_1_Flying_00%d.png",i);
+        TexturesandSounds::missile_texture_animated[i].loadFromFile(filename);
+    }
 }
 void Engine::LoadSounds()
 {
@@ -280,7 +286,7 @@ void Engine::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &Ali
     }
 
     //spawn bombs
-    Bomb::Spawn(aliens,AlienMunitions, frametime);
+    AlienMunition::Spawn(aliens,AlienMunitions, frametime);
 
     //spawn powerups
     if((Constants::clock.getElapsedTime()-PowerUp::last_spawn).asSeconds()>15)

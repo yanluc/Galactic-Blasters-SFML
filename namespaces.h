@@ -13,6 +13,7 @@ namespace TexturesandSounds
      extern sf::Texture missile_texture;
      extern sf::Texture bomb_texture;
      extern sf::Texture heart_texture;
+     extern sf::Texture missile_texture_animated[10];
      extern sf::Texture shield_texture;
      extern sf::Sound explo;
 };
