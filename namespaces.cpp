@@ -19,6 +19,7 @@ namespace Constants
 {
     sf::Font font;
     sf::Clock clock;
+    sf::Time stop_time= sf::seconds(0);
     int width = sf::VideoMode::getDesktopMode().width, height = sf::VideoMode::getDesktopMode().height;
     sf::Time start_time;
 };

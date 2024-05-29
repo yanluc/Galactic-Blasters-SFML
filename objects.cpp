@@ -17,10 +17,10 @@ void Wreckage::load_frame(const sf::IntRect &frame)
 bool Wreckage::update(sf::Time &frametime)
 {
     //change frame in rate of 1 frame per 0.02 seconds
-    if((Constants::clock.getElapsedTime()-last_frame).asSeconds()>0.02)
+    if((Constants::clock.getElapsedTime() - Constants::stop_time-last_frame).asSeconds()>0.02)
     {
         frame++;
-        last_frame=Constants::clock.getElapsedTime();
+        last_frame=Constants::clock.getElapsedTime() - Constants::stop_time;
     }
     if(frame>=frames.size())
     {
@@ -59,7 +59,7 @@ bool Cannon::update(sf::Time &elapsed)
     {
         this->move(elapsed.asSeconds()*0.05*Constants::width,0);
     }
-    if(shield && (Constants::clock.getElapsedTime()-shield_time).asSeconds()>3)
+    if(shield && (Constants::clock.getElapsedTime() - Constants::stop_time-shield_time).asSeconds()>3)
     {
         shield=false;
     }
@@ -77,7 +77,7 @@ void Cannon::shield_on()
 {
     shield=true;
     score+=5;
-    shield_time=Constants::clock.getElapsedTime();
+    shield_time=Constants::clock.getElapsedTime() - Constants::stop_time;
 }
 Alien::Alien()
 {
@@ -112,7 +112,7 @@ Alien::Alien()
         alien_hp=1;
     }
     Alien::grid[grid_posy][grid_posx] = ALIVE;
-    last_spawn=Constants::clock.getElapsedTime();
+    last_spawn=Constants::clock.getElapsedTime() - Constants::stop_time;
     setPosition(-Constants::width*0.05,Constants::height*0.1);
 
 }
@@ -143,7 +143,7 @@ sf::Time Alien::lastdrop()
 }
 void Alien::bomb_dropped()
 {
-    last_drop = Constants::clock.getElapsedTime();
+    last_drop = Constants::clock.getElapsedTime() - Constants::stop_time;
 }
 int Alien::get_position()
 {
@@ -220,8 +220,8 @@ bool Alien::update(sf::Time &frametime)
 }
 Missile::Missile(int posx,int posy)
 {
-    last_frame=Constants::clock.getElapsedTime();
-    lastfired=Constants::clock.getElapsedTime();
+    last_frame=Constants::clock.getElapsedTime() - Constants::stop_time;
+    lastfired=Constants::clock.getElapsedTime() - Constants::stop_time;
     this->setTexture(TexturesandSounds::missile_texture_animated[0]);
     this->setScale(0.2*Constants::width/1920.0,0.2*Constants::height/1080.0);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
@@ -238,12 +238,12 @@ bool Missile::update(sf::Time &frametime)
     {
         return false;
     }
-    if((Constants::clock.getElapsedTime()-last_frame).asSeconds()>0.1)
+    if((Constants::clock.getElapsedTime() - Constants::stop_time-last_frame).asSeconds()>0.1)
     {
         frame++;
         if(frame>9) frame=0;
         this->setTexture(TexturesandSounds::missile_texture_animated[frame]);
-        last_frame=Constants::clock.getElapsedTime();
+        last_frame=Constants::clock.getElapsedTime() - Constants::stop_time;
     }
     this->move(0,-frametime.asSeconds()*0.5*Constants::height);
     return true;
@@ -252,7 +252,7 @@ void Missile::Fire(std::vector<Missile*> &missiles ,Cannon &cannon)
 {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
     {
-        if ((Constants::clock.getElapsedTime() - Missile::last_fired()).asSeconds() > 1)
+        if ((Constants::clock.getElapsedTime() - Constants::stop_time - Missile::last_fired()).asSeconds() > 1)
         {
             missiles.push_back(new Missile(cannon.getPosition().x + cannon.getGlobalBounds().width/2,cannon.getPosition().y));
         }
@@ -295,14 +295,14 @@ bool Missile::collision(PowerUp* &power_up, Cannon &cannon)
 }
 Bomb::Bomb()
 {
-    double a = Constants::clock.getElapsedTime().asSeconds();
+    double a = (Constants::clock.getElapsedTime() - Constants::stop_time).asSeconds();
     int b = 8;
     int turn =(int(a/b)%2);
     vel_x = -(turn*2-1) * Constants::width * 0.05;
     this->setTexture(TexturesandSounds::bomb_texture);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
     this->setScale(0.1*Constants::width/1920.0,0.1*Constants::height/1080.0);
-    this->birthtime=Constants::clock.getElapsedTime();
+    this->birthtime=Constants::clock.getElapsedTime() - Constants::stop_time;
 }
 bool Bomb::collision(Cannon &cannon, std::vector<Wreckage*> &wreckages)
 {
@@ -322,7 +322,7 @@ UnguidedBomb::UnguidedBomb(int posx, int posy)
     this->setTexture(TexturesandSounds::bomb_texture);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
     this->setPosition(posx,posy);
-    this->birthtime=Constants::clock.getElapsedTime();
+    this->birthtime=Constants::clock.getElapsedTime() - Constants::stop_time;
 }
 bool UnguidedBomb::update(sf::Time &frametime, double target)
 {
@@ -340,7 +340,7 @@ GuidedBomb::GuidedBomb(int posx, int posy)
     this->setTexture(TexturesandSounds::bomb_texture);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);
     this->setPosition(posx,posy);
-    this->birthtime=Constants::clock.getElapsedTime();
+    this->birthtime=Constants::clock.getElapsedTime() - Constants::stop_time;
     if(posy<Constants::height*0.4) vel_y=Constants::height*0.05;
     else vel_y=Constants::height*0.15;
 }
@@ -356,7 +356,7 @@ bool GuidedBomb::update(sf::Time &frametime, double target)
     
     if(getPosition().y < 0.4 * Constants::height)
     {
-        vel_y = Constants::height * 0.05  * (3+2*(Constants::clock.getElapsedTime()-birthtime).asSeconds());
+        vel_y = Constants::height * 0.05  * (3+2*(Constants::clock.getElapsedTime() - Constants::stop_time-birthtime).asSeconds());
     }
     else
     {
@@ -404,7 +404,7 @@ bool PowerUp::exists=false;
 sf::Time PowerUp::last_spawn;
 PowerUp::PowerUp(int type)
 {
-    last_spawn=Constants::clock.getElapsedTime();
+    last_spawn=Constants::clock.getElapsedTime() - Constants::stop_time;
     if(type==HEALTH) this->setTexture(TexturesandSounds::heart_texture);
     else if(type==SHIELD) this->setTexture(TexturesandSounds::shield_texture);
     this->setOrigin(this->getGlobalBounds().width/2,this->getGlobalBounds().height/2);

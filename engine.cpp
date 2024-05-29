@@ -125,10 +125,10 @@ void Engine::RunGame()
     std::vector<Missile*> missiles;
     std::vector<Wreckage*> wreckages;
     PowerUp* power_up=nullptr;
-    sf::Time elapsed = Constants::clock.getElapsedTime();
+    sf::Time elapsed = Constants::clock.getElapsedTime() - Constants::stop_time;
     window_.setFramerateLimit(60);
-    Constants::start_time = Constants::clock.getElapsedTime();
-    PowerUp::last_spawn = Constants::clock.getElapsedTime();
+    Constants::start_time = Constants::clock.getElapsedTime() - Constants::stop_time;
+    PowerUp::last_spawn = Constants::clock.getElapsedTime() - Constants::stop_time;
     while(!gameend)
     {
         window_.draw(background);
@@ -149,8 +149,8 @@ void Engine::RunGame()
 }
 bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wreckage*> &wreckages, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles, PowerUp* &power_up, sf::Time &elapsed)
 {
-    sf::Time frametime=Constants::clock.getElapsedTime()-elapsed;
-    elapsed = Constants::clock.getElapsedTime();
+    sf::Time frametime=Constants::clock.getElapsedTime() - Constants::stop_time-elapsed;
+    elapsed = Constants::clock.getElapsedTime() - Constants::stop_time;
     sf::Event event;
     while(window_.pollEvent(event))
     {
@@ -159,6 +159,24 @@ bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wr
             window_.close();
             exit(0);
         }
+    }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q) )
+    {
+        sf::Time time = Constants::clock.getElapsedTime();
+        while(!sf::Keyboard::isKeyPressed(sf::Keyboard::P) && window_.isOpen())
+        {
+            sf::Event event;
+            while(window_.pollEvent(event))
+            {
+                if(event.type==sf::Event::Closed)
+                {
+                    window_.close();
+                    exit(0);
+                }
+            }
+            sf::sleep(sf::Time(sf::milliseconds(10))); //just so to not waste cpu resources
+        }
+        Constants::stop_time += Constants::clock.getElapsedTime() - time;
     }
     Update(cannon,aliens,wreckages, AlienMunitions, missiles, power_up, frametime);
     DrawObjects(cannon,aliens, wreckages, AlienMunitions, missiles, power_up);
@@ -235,7 +253,7 @@ void Engine::Update(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wrec
     wreckages.erase(std::remove_if(wreckages.begin(),wreckages.end(),[&](Wreckage* wreckage){
         return !wreckage->update(frametime);
     }),wreckages.end());
-    double a = Constants::clock.getElapsedTime().asSeconds();
+    double a = (Constants::clock.getElapsedTime() - Constants::stop_time).asSeconds();
     int b = 8;
     bool turn = bool(int(a/b)%2);
     if(turn) Alien::position = b - fmod(a,b)+1;
@@ -279,7 +297,7 @@ void Engine::Collisions(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<
 void Engine::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles,PowerUp* &power_up, sf::Time &frametime)
 {
     //spawn aliens
-    if(enemies_to_spawn>0 && (Constants::clock.getElapsedTime()-Alien::last_spawn).asSeconds()>2)
+    if(enemies_to_spawn>0 && (Constants::clock.getElapsedTime() - Constants::stop_time-Alien::last_spawn).asSeconds()>2)
     {
         aliens.push_back(new Alien());
         enemies_to_spawn--;
@@ -289,7 +307,7 @@ void Engine::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &Ali
     AlienMunition::Spawn(aliens,AlienMunitions, frametime);
 
     //spawn powerups
-    if((Constants::clock.getElapsedTime()-PowerUp::last_spawn).asSeconds()>15)
+    if((Constants::clock.getElapsedTime() - Constants::stop_time-PowerUp::last_spawn).asSeconds()>15)
     {
         power_up = new PowerUp(rand()%2);
     }
@@ -327,7 +345,7 @@ void Engine::GameWon()
     std::cout << "GameWon()" << std::endl;
     window_.draw(*(new Background(TexturesandSounds::background_start_texture)));
     sf::Font font=Constants::font;
-    sf::Time time = Constants::clock.getElapsedTime() - Constants::start_time;
+    sf::Time time = Constants::clock.getElapsedTime() - Constants::stop_time - Constants::start_time;
     sf::Text text;
     text.setFont(font);
     text.setCharacterSize(30);

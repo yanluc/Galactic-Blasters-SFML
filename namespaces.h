@@ -21,6 +21,7 @@ namespace Constants
 {
      extern sf::Font font;
      extern sf::Clock clock;
+     extern sf::Time stop_time;
      extern int width, height;
      extern sf::Time start_time;
 };

@@ -22,7 +22,7 @@ bool StartMenuElements::startgame()
 }
 void StartMenuElements::start_menu(sf::RenderWindow &window, Background &start_background, bool &up, bool &down)
 {
-    sf::Color color(160,160,160);
+    sf::Color color(200,200,200);
     if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && down){down=false;}
     else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && up){ up=false;}
 
