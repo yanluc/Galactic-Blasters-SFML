@@ -115,6 +115,7 @@ void Engine::StartMenu()
 }
 void Engine::RunGame()
 {
+    bool p_down = false;
     bool gameend = false;
     window_.clear(sf::Color(240,240,220));
     std::cout << "RunGame()" << std::endl;
@@ -131,9 +132,14 @@ void Engine::RunGame()
     PowerUp::last_spawn = Constants::clock.getElapsedTime() - Constants::stop_time;
     while(!gameend)
     {
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::P) && !p_down)
         {
-            PauseGame();
+            p_down = true;
+            PauseGame(p_down);
+        }
+        else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+        {
+            p_down = false;
         }
         window_.draw(background);
         gameend = GameLoop(cannon,aliens,wreckages, AlienMunitions, missiles, power_up, elapsed);
@@ -151,7 +157,7 @@ void Engine::RunGame()
         }
     }
 }
-void Engine::PauseGame()
+void Engine::PauseGame(bool &p_down)
 {
     sf::Time time = Constants::clock.getElapsedTime();
     sf::Text text;
@@ -162,7 +168,7 @@ void Engine::PauseGame()
     text.setPosition(0.45 * Constants::width,0.5 * Constants::height);
     window_.draw(text);
     window_.display();
-    while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && window_.isOpen())
+    while((!sf::Keyboard::isKeyPressed(sf::Keyboard::P) || p_down) && window_.isOpen())
     {
         sf::Event event;
         while(window_.pollEvent(event))
@@ -173,8 +179,13 @@ void Engine::PauseGame()
                 exit(0);
             }
         }
+        if(!sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+        {
+            p_down = false;
+        }
         sf::sleep(sf::Time(sf::milliseconds(50)));
     }
+    p_down = true;
     Constants::stop_time += Constants::clock.getElapsedTime() - time;
 }
 bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wreckage*> &wreckages, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles, PowerUp* &power_up, sf::Time &elapsed)
