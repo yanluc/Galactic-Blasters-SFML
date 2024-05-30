@@ -131,6 +131,10 @@ void Engine::RunGame()
     PowerUp::last_spawn = Constants::clock.getElapsedTime() - Constants::stop_time;
     while(!gameend)
     {
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+        {
+            PauseGame();
+        }
         window_.draw(background);
         gameend = GameLoop(cannon,aliens,wreckages, AlienMunitions, missiles, power_up, elapsed);
         window_.display();
@@ -147,6 +151,32 @@ void Engine::RunGame()
         }
     }
 }
+void Engine::PauseGame()
+{
+    sf::Time time = Constants::clock.getElapsedTime();
+    sf::Text text;
+    text.setFont(Constants::font);
+    text.setCharacterSize(50);
+    text.setFillColor(sf::Color::Black);
+    text.setString("Paused");
+    text.setPosition(0.45 * Constants::width,0.5 * Constants::height);
+    window_.draw(text);
+    window_.display();
+    while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && window_.isOpen())
+    {
+        sf::Event event;
+        while(window_.pollEvent(event))
+        {
+            if(event.type==sf::Event::Closed)
+            {
+                window_.close();
+                exit(0);
+            }
+        }
+        sf::sleep(sf::Time(sf::milliseconds(50)));
+    }
+    Constants::stop_time += Constants::clock.getElapsedTime() - time;
+}
 bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wreckage*> &wreckages, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles, PowerUp* &power_up, sf::Time &elapsed)
 {
     sf::Time frametime=Constants::clock.getElapsedTime() - Constants::stop_time-elapsed;
@@ -160,24 +190,7 @@ bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wr
             exit(0);
         }
     }
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q) )
-    {
-        sf::Time time = Constants::clock.getElapsedTime();
-        while(!sf::Keyboard::isKeyPressed(sf::Keyboard::P) && window_.isOpen())
-        {
-            sf::Event event;
-            while(window_.pollEvent(event))
-            {
-                if(event.type==sf::Event::Closed)
-                {
-                    window_.close();
-                    exit(0);
-                }
-            }
-            sf::sleep(sf::Time(sf::milliseconds(10))); //just so to not waste cpu resources
-        }
-        Constants::stop_time += Constants::clock.getElapsedTime() - time;
-    }
+    
     Update(cannon,aliens,wreckages, AlienMunitions, missiles, power_up, frametime);
     DrawObjects(cannon,aliens, wreckages, AlienMunitions, missiles, power_up);
     Spawn(aliens,AlienMunitions, missiles,power_up, frametime);

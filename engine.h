@@ -15,6 +15,7 @@ class Engine
     void InitWindow();
     void StartMenu();
     void RunGame();
+    void PauseGame();
     bool GameLoop(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wreckage*> &wreckages, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles, PowerUp* &power_up, sf::Time &elapsed);
     void DrawObjects(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wreckage*> &wreckages, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles,  PowerUp* &power_up);
     void DrawGameElements(int health);
