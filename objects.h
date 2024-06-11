@@ -63,7 +63,7 @@ class Cannon : public sf::Sprite
     protected:
      int hp;
      bool shield=false;
-     sf::Time shield_time;
+     sf::Time shield_start;
     public:
      void shield_on();
      static int score;

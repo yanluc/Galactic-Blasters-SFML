@@ -346,10 +346,10 @@ void Engine::GameOver()
     text.setCharacterSize(30);
     text.setFillColor(sf::Color::White);
     text.setString("Game Over");
-    text.setPosition(0.45 * Constants::width,0.5 * Constants::height);
+    text.setPosition(0.4 * Constants::width,0.45 * Constants::height);
     window_.draw(text);
     text.setString("Press escape to exit");
-    text.setPosition(0.45 * Constants::width,0.55 * Constants::height);
+    text.setPosition(0.4 * Constants::width,0.5 * Constants::height);
     window_.draw(text);
     window_.display();
     while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && window_.isOpen())
@@ -375,17 +375,17 @@ void Engine::GameWon()
     text.setCharacterSize(30);
     text.setFillColor(sf::Color::White);
     text.setString("You Won!");
-    text.setPosition(0.45 * Constants::width,0.5 * Constants::height);
+    text.setPosition(0.4 * Constants::width,0.45 * Constants::height);
     window_.draw(text);
     text.setString("Score: " + std::to_string(Cannon::score));
-    text.setPosition(0.45 * Constants::width,0.55 * Constants::height);
+    text.setPosition(0.4 * Constants::width,0.5 * Constants::height);
     window_.draw(text);
     text.setString("Time: " + std::to_string(time.asSeconds()) + " seconds");
-    text.setPosition(0.45 * Constants::width,0.6 * Constants::height);
+    text.setPosition(0.4 * Constants::width,0.55 * Constants::height);
     window_.draw(text);
     
     text.setString("Press escape to exit");
-    text.setPosition(0.45 * Constants::width,0.65 * Constants::height);
+    text.setPosition(0.4 * Constants::width,0.6 * Constants::height);
     window_.draw(text);
     window_.display();
     while(!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && window_.isOpen())

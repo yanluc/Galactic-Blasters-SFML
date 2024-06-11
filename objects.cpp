@@ -16,7 +16,6 @@ void Wreckage::load_frame(const sf::IntRect &frame)
 }
 bool Wreckage::update(sf::Time &frametime)
 {
-    //change frame in rate of 1 frame per 0.02 seconds
     if((Constants::clock.getElapsedTime() - Constants::stop_time-last_frame).asSeconds()>0.02)
     {
         frame++;
@@ -59,7 +58,7 @@ bool Cannon::update(sf::Time &elapsed)
     {
         this->move(elapsed.asSeconds()*0.05*Constants::width,0);
     }
-    if(shield && (Constants::clock.getElapsedTime() - Constants::stop_time-shield_time).asSeconds()>3)
+    if(shield && (Constants::clock.getElapsedTime() - Constants::stop_time-shield_start).asSeconds()>6)
     {
         shield=false;
     }
@@ -77,7 +76,7 @@ void Cannon::shield_on()
 {
     shield=true;
     score+=5;
-    shield_time=Constants::clock.getElapsedTime() - Constants::stop_time;
+    shield_start=Constants::clock.getElapsedTime() - Constants::stop_time;
 }
 Alien::Alien()
 {

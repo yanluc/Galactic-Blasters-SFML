@@ -21,7 +21,7 @@ At the beginning screen will be empty, but every 2 seconds new alien will spawn.
 Randomly enemy ships will drop bombs - either standard or guided. Also, sometimes they will conduct kamikaze attacks, that will deal more damage.
 
 #### Powerups:
-Every 15 seconds powerup will appear. Depending on the type, if you manage to shoot it down you will get either additional hp point or shield, protecting you from any damage for 3 seconds.
+Every 15 seconds powerup will appear. Depending on the type, if you manage to shoot it down you will get either additional hp point or shield, protecting you from any damage for 6 seconds.
 
 #### Score:
 You will get points for shooting down enemy ships and powerups, but will loose points for getting hit.
