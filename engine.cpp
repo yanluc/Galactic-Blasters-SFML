@@ -438,4 +438,5 @@ void Engine::GameWon()
     std::ofstream file;
     file.open("resources/scores.txt",std::ios::app);
     file << time.asSeconds() << " " << Cannon::score << std::endl;
+    file.close();
 }
