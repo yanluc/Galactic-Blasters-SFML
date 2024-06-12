@@ -1,4 +1,4 @@
-#include"engine.h"
+#include"engine.hpp"
 #include<stdio.h>
 #include<time.h>
 #include<fstream>
@@ -80,6 +80,13 @@ void Engine::InitWindow()
 }
 void Engine::StartMenu()
 {
+    sf::Music music;
+    if (!music.openFromFile("resources/Retro Vibes Loop.ogg"))
+    {
+        std::cout << "Music not found !" << std::endl;
+    }
+    music.setLoop(true);
+    music.play();
     bool up = false;
     bool down = false;
     StartMenuElements startmenu;
@@ -93,6 +100,7 @@ void Engine::StartMenu()
         {
             if(event.type==sf::Event::Closed)
             {
+                music.stop();
                 window_.close();
                 exit(0);
             }
@@ -108,6 +116,7 @@ void Engine::StartMenu()
         
         if(startmenu.startgame())
         {
+            music.stop();
             return;
         }
         window_.display();
@@ -115,7 +124,16 @@ void Engine::StartMenu()
 }
 void Engine::RunGame()
 {
+    sf::Music music;
+    if (!music.openFromFile("resources/The Good Fight (w intro).ogg"))
+    {
+        std::cout << "Music not found !" << std::endl;
+    }
+    music.setLoop(true);
+    music.setVolume(50);
+    music.play();
     bool p_down = false;
+    bool q_down = false;
     bool gameend = false;
     window_.clear(sf::Color(240,240,220));
     std::cout << "RunGame()" << std::endl;
@@ -132,6 +150,22 @@ void Engine::RunGame()
     PowerUp::last_spawn = Constants::clock.getElapsedTime() - Constants::stop_time;
     while(!gameend)
     {
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+        {
+            if(!q_down)
+            {
+                q_down = true;
+                if(music.getStatus()==sf::Music::Playing)
+                {
+                    music.pause();
+                }
+                else
+                {
+                    music.play();
+                }
+            }  
+        }
+        else q_down = false;
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::P) && !p_down)
         {
             p_down = true;
@@ -142,9 +176,10 @@ void Engine::RunGame()
             p_down = false;
         }
         window_.draw(background);
-        gameend = GameLoop(cannon,aliens,wreckages, AlienMunitions, missiles, power_up, elapsed);
+        gameend = GameLoop(cannon,aliens,wreckages, AlienMunitions, missiles, power_up, elapsed, music);
         window_.display();
     }
+    music.stop();
     if(gameend)
     {
         if(cannon.health()<=0)
@@ -188,7 +223,7 @@ void Engine::PauseGame(bool &p_down)
     p_down = true;
     Constants::stop_time += Constants::clock.getElapsedTime() - time;
 }
-bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wreckage*> &wreckages, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles, PowerUp* &power_up, sf::Time &elapsed)
+bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wreckage*> &wreckages, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles, PowerUp* &power_up, sf::Time &elapsed, sf::Music &music)
 {
     sf::Time frametime=Constants::clock.getElapsedTime() - Constants::stop_time-elapsed;
     elapsed = Constants::clock.getElapsedTime() - Constants::stop_time;
@@ -197,6 +232,7 @@ bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wr
     {
         if(event.type==sf::Event::Closed)
         {
+            music.stop();
             window_.close();
             exit(0);
         }

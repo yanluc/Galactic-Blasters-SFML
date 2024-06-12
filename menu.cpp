@@ -1,4 +1,4 @@
-#include "menu.h"
+#include "menu.hpp"
 int StartMenuElements::highscore=-10000;
 std::vector<std::pair<double,int>> StartMenuElements::GetLeaderboard(char const *filename)
 {

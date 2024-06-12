@@ -3,7 +3,7 @@
 #include<stdlib.h>
 #include<vector>
 #include<string>
-#include"engine.h"
+#include"engine.hpp"
 
 int main()
 {
@@ -30,4 +30,10 @@ copyright:
     
     Power ups and missile:
     https://craftpix.net/freebies/free-space-shooter-game-objects
+
+    game music:
+    Music by Christovix Games
+
+    start menu music:
+    “Retro Vibes”. Music by Marcelo Fernández (http://www.marcelofernandezmusic.com). Licensed under Creative Commons Attribution 4.0 International (https://creativecommons.org/licenses/by/4.0/).
 */

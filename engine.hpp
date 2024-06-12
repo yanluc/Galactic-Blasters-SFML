@@ -1,5 +1,5 @@
 #pragma once
-#include"menu.h"
+#include "menu.hpp"
 // #include<format>
 class Engine
 {
@@ -16,7 +16,7 @@ class Engine
     void StartMenu();
     void RunGame();
     void PauseGame(bool &p_down);
-    bool GameLoop(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wreckage*> &wreckages, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles, PowerUp* &power_up, sf::Time &elapsed);
+    bool GameLoop(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wreckage*> &wreckages, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles, PowerUp* &power_up, sf::Time &elapsed, sf::Music &music);
     void DrawObjects(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wreckage*> &wreckages, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles,  PowerUp* &power_up);
     void DrawGameElements(int health);
     void Update(Cannon &cannon, std::vector<Alien*> &aliens, std::vector<Wreckage*> &wreckages, std::vector<AlienMunition*> &AlienMunitions, std::vector<Missile*> &missiles,PowerUp* &power_up, sf::Time &frametime);

@@ -1,4 +1,4 @@
-#include"objects.h"
+#include"objects.hpp"
 
 std::vector<sf::IntRect> Wreckage::frames;
 Wreckage::Wreckage(int posx, int posy)

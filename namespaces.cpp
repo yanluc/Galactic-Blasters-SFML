@@ -1,4 +1,4 @@
-#include "namespaces.h"
+#include "namespaces.hpp"
 namespace TexturesandSounds
 {
     sf::SoundBuffer explo_sound;

@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
-#include "namespaces.h"
+#include "namespaces.hpp"
 #define DESTROYED 2
 #define ALIVE 1
 #define EMPTY 0
