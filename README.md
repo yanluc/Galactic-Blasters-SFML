@@ -14,6 +14,7 @@ To go back press escape.
 #### Game:
 Use right and left arrows to move, press space to shoot.
 To pause or unpause press P key.
+To pause or unpause music press Q key.
 
 ### Game mechanics:
 #### Aliens:
