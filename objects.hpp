@@ -20,6 +20,7 @@ class Alien : public sf::Sprite
      sf::Time last_drop;
     public:
      static double position;
+     int get_phase();
      void hit();
      int hp();
      int alientype();
@@ -122,7 +123,7 @@ class GuidedBomb : public Bomb
      int dam=1;
      double vel_y;
     public:
-     GuidedBomb(int posx, int posy);
+     GuidedBomb(int posx, int posy, bool new_alien);
      bool update(sf::Time &frametime, double target);
 
 };
@@ -131,7 +132,7 @@ class UnguidedBomb : public Bomb
     protected:
      int dam=5;
     public:
-     UnguidedBomb(int posx, int posy);
+     UnguidedBomb(int posx, int posy, bool new_alien);
      bool update(sf::Time &frametime, double target);
 };
 class Background : public sf::Sprite

@@ -75,7 +75,7 @@ void Engine::InitWindow()
     window_.create(sf::VideoMode(Constants::width,Constants::height),"Galactic Blasters");
     if (!Constants::font.loadFromFile("resources/COMICSANS.TTF"))
     {
-        std::cout << "Font not found !" << std::endl;
+        std::cerr << "Font not found !" << std::endl;
     }
 }
 void Engine::StartMenu()
@@ -83,15 +83,15 @@ void Engine::StartMenu()
     sf::Music music;
     if (!music.openFromFile("resources/Retro Vibes Loop.ogg"))
     {
-        std::cout << "Music not found !" << std::endl;
+        std::cerr << "Music not found !" << std::endl;
     }
     music.setLoop(true);
-    music.play();
     bool up = false;
     bool down = false;
     StartMenuElements startmenu;
     startmenu.current_screen = StartMenuElements::screen::MAIN;
     Background menu_background(TexturesandSounds::background_start_texture);   
+    music.play();
     while (window_.isOpen())
     {
         
@@ -101,6 +101,7 @@ void Engine::StartMenu()
             if(event.type==sf::Event::Closed)
             {
                 music.stop();
+                music.~Music();
                 window_.close();
                 exit(0);
             }
@@ -127,7 +128,7 @@ void Engine::RunGame()
     sf::Music music;
     if (!music.openFromFile("resources/The Good Fight (w intro).ogg"))
     {
-        std::cout << "Music not found !" << std::endl;
+        std::cerr << "Music not found !" << std::endl;
     }
     music.setLoop(true);
     music.setVolume(50);
@@ -136,7 +137,6 @@ void Engine::RunGame()
     bool q_down = false;
     bool gameend = false;
     window_.clear(sf::Color(240,240,220));
-    std::cout << "RunGame()" << std::endl;
     Cannon cannon(30);
     Background background(TexturesandSounds::background_texture);
     std::vector<Alien*> aliens;
@@ -233,6 +233,7 @@ bool Engine::GameLoop(Cannon &cannon, std::vector<Alien*> &aliens,std::vector<Wr
         if(event.type==sf::Event::Closed)
         {
             music.stop();
+            music.~Music();
             window_.close();
             exit(0);
         }
@@ -374,7 +375,6 @@ void Engine::Spawn(std::vector<Alien*> &aliens, std::vector<AlienMunition*> &Ali
 }
 void Engine::GameOver()
 {
-    std::cout << "GameOver()" << std::endl;
     window_.draw(*(new Background(TexturesandSounds::background_start_texture)));
     sf::Font font=Constants::font;
     sf::Text text;
@@ -402,7 +402,6 @@ void Engine::GameOver()
 }
 void Engine::GameWon()
 {
-    std::cout << "GameWon()" << std::endl;
     window_.draw(*(new Background(TexturesandSounds::background_start_texture)));
     sf::Font font=Constants::font;
     sf::Time time = Constants::clock.getElapsedTime() - Constants::stop_time - Constants::start_time;
